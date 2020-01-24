@@ -1,0 +1,10 @@
+rootProject.name = 'enderwand'
+includeFlat 'core', 'bukkit'
+
+rootProject.children.each { project ->
+    project.with {
+        projectDir = file("modules/${name.replace(":", File.separator)}")
+        buildFileName = "${name.replace(':', '-')}.gradle"
+        name = "${rootProject.name}-${name.replace(':', '-')}"
+    }
+}

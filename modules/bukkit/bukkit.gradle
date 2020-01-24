@@ -1,0 +1,72 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'kr.entree.spigradle' version '1.0.6'
+    id 'maven-publish'
+}
+
+spigot {
+    name = 'EnderWand'
+    authors = ['EntryPoint']
+    apiVersion = '1.15'
+    softDepend = ['Vault', 'ProtocolLib']
+}
+
+repositories {
+    jitpack()
+    protocolLib()
+}
+
+dependencies {
+    api project(':enderwand-core')
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3"
+    compileOnly spigot()
+    compileOnly vault()
+    compileOnly protocolLib()
+    testImplementation spigot()
+}
+
+shadowJar {
+    archiveClassifier.set('shaded')
+    minimize {
+        exclude dependency('org.jetbrains.kotlin:.*')
+        exclude dependency('org.jetbrains.kotlinx:.*')
+    }
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+task nostdlibJar(type: ShadowJar) {
+    group = 'shadow'
+    archiveClassifier.set('nostdlib')
+    spigot.depend.add('Spikot') // TODO: Refactoring
+    from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
+    configurations = [project.configurations.runtimeClasspath]
+    dependencies {
+        exclude dependency('org.jetbrains.kotlin:.*')
+        exclude dependency('org.jetbrains.kotlinx:.*')
+    }
+}
+
+jar.dependsOn(shadowJar, nostdlibJar)
+
+publishing {
+    publications {
+        EnderWandPublication(MavenPublication) {
+            from components.java
+            artifact shadowJar
+            afterEvaluate {
+                artifact kotlinSourcesJar
+            }
+        }
+    }
+}
+
+artifacts {
+    archives kotlinSourcesJar
+}
+
+[compileKotlin, compileTestKotlin]*.kotlinOptions*.jvmTarget = 1.8
+compileKotlin.kotlinOptions.freeCompilerArgs += [
+        '-Xuse-experimental=kotlin.Experimental',
+        '-Xinline-classes'
+]
