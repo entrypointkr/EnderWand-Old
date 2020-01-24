@@ -19,7 +19,8 @@ class EventReactor : Listener {
     val move = playerReactor<PlayerMoveEvent>()
     val chat = playerReactor<AsyncPlayerChatEvent>()
     val chatAsync = playerReactor<AsyncPlayerChatEvent>()
-    val playerReactors = listOf(interact, interactEntity, interactAny, move, chat, chatAsync)
+    val resourcePack = playerReactor<PlayerResourcePackStatusEvent>()
+    val playerReactors = listOf(interact, interactEntity, interactAny, move, chat, chatAsync, resourcePack)
 
     @EventHandler
     fun onQuit(e: PlayerQuitEvent) {
@@ -48,4 +49,7 @@ class EventReactor : Listener {
         chatAsync.notify(e)
         enderWand.scheduler.runTask { chat.notify(e) }
     }
+
+    @EventHandler
+    fun onResourcePack(e: PlayerResourcePackStatusEvent) = resourcePack.notify(e)
 }

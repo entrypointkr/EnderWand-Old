@@ -17,6 +17,8 @@ fun parseTitle(string: String): Title {
 
 fun String.toTitle() = parseTitle(this)
 
+fun Player.sendTitle(title: Title) = title.sendTo(this)
+
 data class Title(
     var title: String,
     var subTitle: String,

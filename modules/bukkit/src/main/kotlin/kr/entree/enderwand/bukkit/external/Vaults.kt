@@ -2,7 +2,6 @@ package kr.entree.enderwand.bukkit.external
 
 import kr.entree.enderwand.bukkit.player.toOfflinePlayer
 import net.milkbowl.vault.economy.Economy
-import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import java.util.*
@@ -14,26 +13,40 @@ val economy: Economy by lazy {
     Bukkit.getServicesManager().load(Economy::class.java)!!
 }
 
-class EconomyResult(val success: Boolean)
+
+inline class EconomyResult(val remain: Double) {
+    val success get() = remain <= 0
+    val failure get() = remain > 0
+
+    inline fun onSuccess(block: EconomyResult.() -> Unit): EconomyResult {
+        if (success) block()
+        return this
+    }
+
+    inline fun onFailure(block: EconomyResult.() -> Unit): EconomyResult {
+        if (failure) block()
+        return this
+    }
+}
 
 inline class EconomyHolder(val uuid: UUID) {
     operator fun plusAssign(amount: Number) {
         give(amount)
     }
 
-    fun give(amount: Number) = EconomyResult(
-        economy.depositPlayer(
-            uuid.toOfflinePlayer(),
-            amount.toDouble()
-        ).type == EconomyResponse.ResponseType.SUCCESS
-    )
+    fun give(amount: Number) = economy.depositPlayer(
+        uuid.toOfflinePlayer(),
+        amount.toDouble()
+    ).let {
+        EconomyResult(amount.toDouble() - it.balance)
+    }
 
-    fun take(amount: Number) = EconomyResult(
-        economy.withdrawPlayer(
-            uuid.toOfflinePlayer(),
-            amount.toDouble()
-        ).type == EconomyResponse.ResponseType.SUCCESS
-    )
+    fun take(amount: Number) = economy.withdrawPlayer(
+        uuid.toOfflinePlayer(),
+        amount.toDouble()
+    ).let {
+        EconomyResult(amount.toDouble() - it.balance)
+    }
 
     fun get() = economy.getBalance(uuid.toOfflinePlayer())
 }
