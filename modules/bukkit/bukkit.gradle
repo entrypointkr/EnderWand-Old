@@ -8,10 +8,11 @@ spigot {
     name = 'EnderWand'
     authors = ['EntryPoint']
     apiVersion = '1.15'
-    softDepend = ['Vault', 'ProtocolLib']
+    softDepend = ['Vault', 'ProtocolLib', 'LuckPerms']
 }
 
 repositories {
+    mavenCentral()
     jitpack()
     protocolLib()
 }
@@ -22,6 +23,7 @@ dependencies {
     compileOnly spigot('1.15.2')
     compileOnly vault()
     compileOnly protocolLib()
+    compileOnly 'net.luckperms:api:5.0'
     testImplementation spigot()
 }
 

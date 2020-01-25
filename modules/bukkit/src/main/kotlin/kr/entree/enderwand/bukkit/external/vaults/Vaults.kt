@@ -1,9 +1,11 @@
-package kr.entree.enderwand.bukkit.external
+package kr.entree.enderwand.bukkit.external.vaults
 
 import kr.entree.enderwand.bukkit.player.toOfflinePlayer
 import net.milkbowl.vault.economy.Economy
+import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import java.util.*
 
 /**
@@ -13,6 +15,9 @@ val economy: Economy by lazy {
     Bukkit.getServicesManager().load(Economy::class.java)!!
 }
 
+val permission: Permission by lazy {
+    Bukkit.getServicesManager().load(Permission::class.java)!!
+}
 
 inline class EconomyResult(val remain: Double) {
     val success get() = remain <= 0
@@ -52,3 +57,7 @@ inline class EconomyHolder(val uuid: UUID) {
 }
 
 val OfflinePlayer.money get() = EconomyHolder(uniqueId)
+
+val Player.group get() = permission.getPrimaryGroup(this)
+
+val Player.groups get() = permission.getPlayerGroups(this)

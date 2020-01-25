@@ -1,4 +1,4 @@
-package kr.entree.enderwand.bukkit.external
+package kr.entree.enderwand.bukkit.external.protocollib
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
@@ -14,20 +14,38 @@ fun registerPacketListener(
     priority: ListenerPriority,
     plugin: Plugin = enderWand,
     receiver: PacketEvent.() -> Unit
-) = ProtocolLibrary.getProtocolManager().addPacketListener(FunctionalPacketAdapter(plugin, priority, types, receiver))
+) = ProtocolLibrary.getProtocolManager().addPacketListener(
+    FunctionalPacketAdapter(
+        plugin,
+        priority,
+        types,
+        receiver
+    )
+)
 
 fun registerPacketListener(
     type: PacketType,
     priority: ListenerPriority = ListenerPriority.NORMAL,
     plugin: Plugin = enderWand,
     receiver: PacketEvent.() -> Unit
-) = registerPacketListener(arrayOf(type), priority, plugin, receiver)
+) = registerPacketListener(
+    arrayOf(type),
+    priority,
+    plugin,
+    receiver
+)
 
 fun NetworkMarker.addOutputHandler(
     plugin: Plugin = enderWand,
     priority: ListenerPriority = ListenerPriority.NORMAL,
     receiver: PacketEvent.(ByteArray) -> ByteArray
-) = addOutputHandler(FunctionalPacketOutputHandler(plugin, priority, receiver))
+) = addOutputHandler(
+    FunctionalPacketOutputHandler(
+        plugin,
+        priority,
+        receiver
+    )
+)
 
 class FunctionalPacketAdapter(
     aPlugin: Plugin,

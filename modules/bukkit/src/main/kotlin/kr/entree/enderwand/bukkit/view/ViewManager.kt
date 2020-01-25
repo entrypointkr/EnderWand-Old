@@ -8,22 +8,20 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryEvent
-import org.bukkit.inventory.Inventory
 import java.util.*
 
 /**
  * Created by JunHyung Lim on 2020-01-04
  */
-fun HumanEntity.open(view: ViewComponent) =
+fun HumanEntity.openView(view: View) =
     enderWand.viewManager.open(this, view)
 
-fun HumanEntity.open(handler: (InventoryEvent) -> Unit, factory: () -> Inventory) =
-    open(View(handler, factory))
+infix fun View.openTo(player: HumanEntity) = player.openView(this)
 
 class ViewManager : Listener {
-    val handlerMap = mutableMapOf<UUID, ViewComponent>()
+    val handlerMap = mutableMapOf<UUID, View>()
 
-    fun open(player: HumanEntity, view: ViewComponent) =
+    fun open(player: HumanEntity, view: View) =
         view.create().apply {
             player.openInventory(this)
             handlerMap[player.uniqueId] = view

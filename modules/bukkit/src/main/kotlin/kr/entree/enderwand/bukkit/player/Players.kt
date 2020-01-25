@@ -32,3 +32,18 @@ fun CommandSender.toPlayerOrThrow() = toPlayer() ?: throw UnknownPlayerException
 fun BukkitSender.toPlayerOrThrow() = player ?: throw UnknownPlayerException(name)
 
 val HumanEntity.itemInMainHand get() = inventory.itemInMainHand
+
+fun CommandSender.execute(commandLine: String) = Bukkit.dispatchCommand(this, commandLine)
+
+inline fun CommandSender.sudo(block: CommandSender.() -> Unit) {
+    val wasUser = isOp
+    if (wasUser) {
+        isOp = true
+    }
+    block()
+    if (wasUser) {
+        isOp = false
+    }
+}
+
+fun CommandSender.executeAsOp(commandLine: String) = sudo { execute(commandLine) }

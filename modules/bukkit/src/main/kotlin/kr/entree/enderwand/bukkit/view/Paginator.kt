@@ -1,16 +1,14 @@
 package kr.entree.enderwand.bukkit.view
 
-import kr.entree.enderwand.bukkit.enderWand
+import kr.entree.enderwand.bukkit.event.cancelViolationClick
+import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.fill
 import kr.entree.enderwand.bukkit.inventory.inventory
 import kr.entree.enderwand.bukkit.inventory.slot
 import kr.entree.enderwand.bukkit.item.item
 import kr.entree.enderwand.bukkit.item.meta
 import kr.entree.enderwand.bukkit.item.setName
-import kr.entree.enderwand.bukkit.scheduler.scheduler
-import kr.entree.enderwand.bukkit.view.handler.cancelViolationClick
 import org.bukkit.Material
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
@@ -29,6 +27,36 @@ fun ButtonContext<Paginator>.remove() {
     source.buttons.remove(button)
     update()
 }
+
+fun paginator(
+    title: String,
+    buttons: LinkedList<Button<Paginator>>,
+    row: Int = 6,
+    pageButtonFactory: Paginator.(left: Boolean) -> ItemStack = { left ->
+        item(BUTTONS.random()) {
+            amount = page
+            meta {
+                setName(
+                    if (left) "&c<- &a[${page}/${maxPage}]"
+                    else "&a[${page}/${maxPage}] &c->"
+                )
+            }
+        }
+    },
+    slots: List<Int> = (0 until ((row - 1) * 9)).toList(),
+    prevPageButtonSlot: Int = slot(3, row - 1),
+    nextPageButtonSlot: Int = slot(5, row - 1),
+    extraButtons: ButtonMapBuilder<Paginator>.() -> Unit
+) = Paginator(
+    title,
+    buttons,
+    row,
+    pageButtonFactory,
+    slots,
+    prevPageButtonSlot,
+    nextPageButtonSlot,
+    ButtonMapBuilder<Paginator>().apply(extraButtons).map
+)
 
 class Paginator(
     val title: String,
@@ -49,7 +77,7 @@ class Paginator(
     var prevPageButtonSlot: Int = slot(3, row - 1),
     var nextPageButtonSlot: Int = slot(5, row - 1),
     val extraButtons: MutableMap<Int, Button<Paginator>> = mutableMapOf()
-) : DynamicView {
+) : View, ViewFlexible {
     var page = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
     val isPageableToPrev get() = page > 1
@@ -62,29 +90,27 @@ class Paginator(
         var index = (page - 1) * slots.size
         for (slot in slots) {
             val button = buttons.getOrNull(index++) ?: break
-            setItem(slot, button.item)
+            setItem(slot, button.item())
         }
         if (isPageableToPrev)
             setItem(prevPageButtonSlot, pageButtonFactory(this@Paginator, true))
         if (isPageableToNext)
             setItem(nextPageButtonSlot, pageButtonFactory(this@Paginator, false))
         extraButtons.forEach { (slot, button) ->
-            setItem(slot, button.item)
+            setItem(slot, button.item())
         }
     }
 
     override fun onEvent(e: InventoryEvent) {
         e.cancelViolationClick()
-        if (e is InventoryClickEvent && e.click != ClickType.DOUBLE_CLICK) {
+        if (e is InventoryClickEvent && e.isNotDoubleClick) {
             val slot = slots.indexOf(e.rawSlot)
             val button = if (slot >= 0) {
                 val offset = (page - 1) * slots.size
                 buttons.getOrNull(offset + slot)
             } else null
             if (button != null) {
-                enderWand.scheduler {
-                    button(e, this)
-                }
+                button.invokeLater(e, this)
             } else if (e.rawSlot == prevPageButtonSlot && isPageableToPrev) {
                 page--
                 update(e.inventory)
@@ -92,12 +118,7 @@ class Paginator(
                 page++
                 update(e.inventory)
             } else {
-                val extra = extraButtons[e.rawSlot]
-                if (extra != null) {
-                    enderWand.scheduler {
-                        extra(e, this)
-                    }
-                }
+                extraButtons[e.rawSlot]?.invokeLater(e, this)
             }
         }
     }
