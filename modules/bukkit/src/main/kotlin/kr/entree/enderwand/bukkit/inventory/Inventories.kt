@@ -28,6 +28,8 @@ val Inventory.storageSize
             size
         }
 
+val Inventory.indicies get() = 0 until storageSize
+
 fun Inventory.addAt(slot: Int, addItem: ItemStack, count: Int = addItem.amount): JobResult {
     var fails = count
     val item = getItem(slot)
@@ -47,35 +49,46 @@ fun Inventory.addAt(slot: Int, addItem: ItemStack, count: Int = addItem.amount):
 
 val JOB_RESULT_SUCCESS = JobResult(0)
 
-data class JobResult(val remain: Int) {
+inline class JobResult(val remain: Int) {
     val success get() = remain <= 0
-    val fail get() = !success
+    val failure get() = !success
+
+    inline fun onSuccess(block: JobResult.() -> Unit): JobResult {
+        if (success) block()
+        return this
+    }
+
+    inline fun onFailure(block: JobResult.() -> Unit): JobResult {
+        if (failure) block()
+        return this
+    }
 }
 
-fun Inventory.takeItem(count: Int, selector: (ItemStack) -> Boolean): JobResult {
-    if (count <= 0) {
-        return JOB_RESULT_SUCCESS
-    }
+inline fun Inventory.takeItem(count: Int, selector: (ItemStack) -> Boolean): JobResult {
+    if (count <= 0) return JOB_RESULT_SUCCESS
+    val operations = mutableListOf<() -> Unit>()
     var fails = count
-    for (index in 0 until storageSize) {
-        val content = getItem(index)
-        if (content == null || !selector(content)) {
-            continue
-        }
+    for (index in indicies) {
+        val content = getItem(index)?.takeIf(selector) ?: continue
         val qty = content.amount
         if (qty > fails) {
-            content.amount = qty - fails
+            operations += { content.amount = qty - fails }
             fails = 0
             break
         } else {
-            setItem(index, null)
+            operations += { setItem(index, null) }
             fails -= qty
             if (fails == 0) {
                 break
             }
         }
     }
-    return JobResult(fails)
+    return if (fails <= 0) {
+        operations.forEach { it() }
+        JOB_RESULT_SUCCESS
+    } else {
+        JobResult(fails)
+    }
 }
 
 fun Inventory.takeItem(item: ItemStack, takeCount: Int = item.amount) =
@@ -117,7 +130,7 @@ fun Inventory.giveItemOrDrop(item: ItemStack, giveCount: Int = item.amount): Job
     val result = giveItem(item, giveCount)
     val loc = location
     val world = loc?.world
-    return if (result.fail && loc != null && world != null) {
+    return if (result.failure && loc != null && world != null) {
         world.dropItem(loc.add(0.0, 0.1, 0.0), item(item) { amount = result.remain })
         JOB_RESULT_SUCCESS
     } else {

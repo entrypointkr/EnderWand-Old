@@ -10,8 +10,13 @@ import java.util.*
 fun <V> MutableMap<UUID, V>.put(entity: Entity, value: V) =
     put(entity.uniqueId, value)
 
+operator fun <V> MutableMap<UUID, V>.set(entity: Entity, value: V) =
+    set(entity.uniqueId, value)
+
 fun <V> MutableMap<String, V>.put(sender: CommandSender, value: V) =
     put(sender.name, value)
+
+operator fun <V> MutableMap<String, V>.set(sender: CommandSender, value: V) = set(sender.name, value)
 
 fun <V> MutableMap<UUID, V>.remove(entity: Entity) =
     remove(entity.uniqueId)

@@ -35,8 +35,8 @@ val HumanEntity.itemInMainHand get() = inventory.itemInMainHand
 
 fun CommandSender.execute(commandLine: String) = Bukkit.dispatchCommand(this, commandLine)
 
-inline fun CommandSender.sudo(block: CommandSender.() -> Unit) {
-    val wasUser = isOp
+inline fun <T : CommandSender> T.sudo(block: T.() -> Unit) {
+    val wasUser = !isOp
     if (wasUser) {
         isOp = true
     }

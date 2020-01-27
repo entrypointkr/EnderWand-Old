@@ -1,7 +1,9 @@
 package kr.entree.enderwand.bukkit.item
 
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -29,3 +31,11 @@ fun ItemStack?.isNotAir(): Boolean {
     }
     return !isAir()
 }
+
+inline fun headItem(player: OfflinePlayer?, configure: SkullMeta.() -> Unit) =
+    item(Material.PLAYER_HEAD) {
+        meta<SkullMeta> {
+            owningPlayer = player
+            configure(this)
+        }
+    }

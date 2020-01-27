@@ -13,12 +13,11 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 /**
  * Created by JunHyung Lim on 2020-01-20
  */
-private val BUTTONS = listOf(
+val PAGINATOR_DEFAULT_BUTTONS = listOf(
     Material.OAK_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON,
     Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.STONE_BUTTON
 )
@@ -28,12 +27,16 @@ fun ButtonContext<Paginator>.remove() {
     update()
 }
 
-fun paginator(
+inline fun paginator(
     title: String,
-    buttons: LinkedList<Button<Paginator>>,
     row: Int = 6,
-    pageButtonFactory: Paginator.(left: Boolean) -> ItemStack = { left ->
-        item(BUTTONS.random()) {
+    configure: Paginator.() -> Unit = {}
+) = Paginator(
+    title,
+    mutableListOf(),
+    row,
+    { left ->
+        item(PAGINATOR_DEFAULT_BUTTONS.random()) {
             amount = page
             meta {
                 setName(
@@ -43,42 +46,23 @@ fun paginator(
             }
         }
     },
-    slots: List<Int> = (0 until ((row - 1) * 9)).toList(),
-    prevPageButtonSlot: Int = slot(3, row - 1),
-    nextPageButtonSlot: Int = slot(5, row - 1),
-    extraButtons: ButtonMapBuilder<Paginator>.() -> Unit
-) = Paginator(
-    title,
-    buttons,
-    row,
-    pageButtonFactory,
-    slots,
-    prevPageButtonSlot,
-    nextPageButtonSlot,
-    ButtonMapBuilder<Paginator>().apply(extraButtons).map
-)
+    (0 until ((row - 1) * 9)).toList(),
+    slot(3, row - 1),
+    slot(5, row - 1),
+    mutableMapOf()
+).apply(configure)
 
 class Paginator(
     val title: String,
-    var buttons: LinkedList<Button<Paginator>>,
+    var buttons: MutableList<Button<Paginator>>,
     val row: Int = 6,
-    val pageButtonFactory: Paginator.(left: Boolean) -> ItemStack = { left ->
-        item(BUTTONS.random()) {
-            amount = page
-            meta {
-                setName(
-                    if (left) "&c<- &a[${page}/${maxPage}]"
-                    else "&a[${page}/${maxPage}] &c->"
-                )
-            }
-        }
-    },
-    var slots: List<Int> = (0 until ((row - 1) * 9)).toList(),
-    var prevPageButtonSlot: Int = slot(3, row - 1),
-    var nextPageButtonSlot: Int = slot(5, row - 1),
-    val extraButtons: MutableMap<Int, Button<Paginator>> = mutableMapOf()
+    var pagingButton: Paginator.(left: Boolean) -> ItemStack,
+    var slots: List<Int>,
+    var prevPageButtonSlot: Int,
+    var nextPageButtonSlot: Int,
+    val extraButtons: MutableMap<Int, Button<Paginator>>
 ) : View, ViewFlexible {
-    var page = 1
+    var page: Int = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
     val isPageableToPrev get() = page > 1
     val isPageableToNext get() = page < maxPage
@@ -93,9 +77,9 @@ class Paginator(
             setItem(slot, button.item())
         }
         if (isPageableToPrev)
-            setItem(prevPageButtonSlot, pageButtonFactory(this@Paginator, true))
+            setItem(prevPageButtonSlot, pagingButton(this@Paginator, true))
         if (isPageableToNext)
-            setItem(nextPageButtonSlot, pageButtonFactory(this@Paginator, false))
+            setItem(nextPageButtonSlot, pagingButton(this@Paginator, false))
         extraButtons.forEach { (slot, button) ->
             setItem(slot, button.item())
         }
@@ -122,4 +106,17 @@ class Paginator(
             }
         }
     }
+
+    fun button(item: () -> ItemStack) = Button<Paginator>(item)
+
+    inline fun extra(builder: ButtonMapBuilder<Paginator>.() -> Unit) =
+        ButtonMapBuilder(extraButtons).apply(builder)
+
+    operator fun Button<Paginator>.unaryPlus() = buttons.add(this)
+
+    operator fun Iterable<Button<Paginator>>.unaryPlus() = buttons.addAll(this)
+
+    operator fun Button<Paginator>.unaryMinus() = buttons.remove(this)
+    
+    operator fun Iterable<Button<Paginator>>.unaryMinus() = buttons.removeAll(this)
 }

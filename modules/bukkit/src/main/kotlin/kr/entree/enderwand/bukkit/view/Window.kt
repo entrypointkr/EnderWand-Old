@@ -30,9 +30,9 @@ class Window(
         }
     }
 
-    override fun update(inv: Inventory) {
-        for (i in 0 until inv.size) {
-            inv.setItem(i, buttons[i]?.item?.invoke())
+    override fun update(inventory: Inventory) {
+        for (i in 0 until inventory.size) {
+            inventory.setItem(i, buttons[i]?.item?.invoke())
         }
     }
 }

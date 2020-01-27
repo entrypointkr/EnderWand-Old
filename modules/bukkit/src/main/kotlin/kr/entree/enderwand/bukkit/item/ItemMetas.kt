@@ -8,9 +8,12 @@ import org.bukkit.inventory.meta.ItemMeta
 /**
  * Created by JunHyung Lim on 2020-01-25
  */
-inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) {
+inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) = meta<ItemMeta>(configure)
+
+@JvmName("metaTyped")
+inline fun <reified T : ItemMeta> ItemStack.meta(configure: T.() -> Unit) {
     val meta = itemMeta
-    if (meta != null) {
+    if (meta is T) {
         meta.configure()
         itemMeta = meta
     }

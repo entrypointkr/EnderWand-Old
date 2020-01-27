@@ -13,7 +13,7 @@ interface View {
 }
 
 interface ViewFlexible {
-    fun update(inv: Inventory)
+    fun update(inventory: Inventory)
 }
 
 interface DynamicView : View, ViewFlexible
