@@ -3,7 +3,6 @@ package kr.entree.enderwand
 import kr.entree.enderwand.collection.toReader
 import kr.entree.enderwand.command.command
 import kr.entree.enderwand.command.executor.execute
-import kr.entree.enderwand.command.sender.ConsoleSender
 import kr.entree.enderwand.command.sender.Sender
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

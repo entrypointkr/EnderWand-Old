@@ -16,16 +16,9 @@ class ArgumentedCommand<S : Sender> : Command<S> {
     private lateinit var _executor: CommandContext<S, List<Any>>.() -> Unit
     private var _tabCompletor: CommandContext<S, Reader<String>>.() -> List<String> = { emptyList() }
 
-    fun add(argument: Argument) = arguments.add(argument)
+    operator fun Argument.unaryPlus() = arguments.add(this)
 
-    inline fun string(description: String = "string", configure: Argument.() -> Unit = {}) =
-        add(Argument(description, _parser = STRING_PARSER).apply(configure))
-
-    inline fun int(description: String = "int", configure: Argument.() -> Unit = {}) =
-        add(Argument(description, _parser = INT_PARSER).apply(configure))
-
-    inline fun double(description: String = "double", configure: Argument.() -> Unit = {}) =
-        add(Argument(description, _parser = DOUBLE_PARSER).apply(configure))
+    operator fun Argument.unaryMinus() = arguments.remove(this)
 
     fun executor(executor: CommandContext<S, List<Any>>.() -> Unit) {
         this._executor = executor

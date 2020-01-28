@@ -12,3 +12,7 @@ val Number.seconds get() = Duration.ofSeconds(toLong())
 val Number.minutes get() = Duration.ofMinutes(toLong())
 
 val Number.hours get() = Duration.ofHours(toLong())
+
+fun CharSequence.toDuration(parser: DurationParser = EnglishDurationParser) = parser.parse(toString())
+
+fun CharSequence.toDurationKor() = toDuration(KoreanDurationParser)
