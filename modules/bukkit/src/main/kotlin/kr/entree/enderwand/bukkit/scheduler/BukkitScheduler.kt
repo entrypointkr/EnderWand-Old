@@ -28,52 +28,58 @@ fun StandardData.autoSave(plugin: Plugin = enderWand, period: Duration = 15.minu
 abstract class BukkitScheduler : Scheduler {
     override fun invoke(
         runnable: () -> Unit
-    ) = this.runTask { runnable() }
+    ) {
+        runTask { runnable() }
+    }
 
     fun runTaskLater(
         delay: Duration,
-        runnable: (BukkitTask) -> Unit
-    ) = runTaskLater(delay.toTicks(), runnable)
+        runnable: () -> Unit
+    ): BukkitTask = runTaskLater(delay.toTicks(), runnable)
 
     override fun runLater(
         delay: Duration,
         runnable: () -> Unit
-    ) = runTaskLater(delay) { runnable() }
+    ) {
+        runTaskLater(delay) { runnable() }
+    }
 
     fun runTaskRepeat(
         delay: Duration,
         period: Duration = delay,
-        runnable: (BukkitTask) -> Unit
-    ) = runTaskRepeat(delay.toTicks(), period.toTicks(), runnable)
+        runnable: () -> Unit
+    ): BukkitTask = runTaskRepeat(delay.toTicks(), period.toTicks(), runnable)
 
     fun runTaskRepeat(
         period: Duration,
-        runnable: (BukkitTask) -> Unit
+        runnable: () -> Unit
     ) = runTaskRepeat(period, period, runnable)
 
     override fun runRepeat(
         delay: Duration,
         period: Duration,
         runnable: () -> Unit
-    ) = runTaskRepeat(delay, period) { runnable() }
+    ) {
+        runTaskRepeat(delay, period) { runnable() }
+    }
 
     abstract fun runTask(
-        runnable: (BukkitTask) -> Unit
-    )
+        runnable: () -> Unit
+    ): BukkitTask
 
     abstract fun runTaskLater(
         delayTicks: Long,
-        runnable: (BukkitTask) -> Unit
-    )
+        runnable: () -> Unit
+    ): BukkitTask
 
     abstract fun runTaskRepeat(
         delayTicks: Long,
         periodTicks: Long,
-        runnable: (BukkitTask) -> Unit
-    )
+        runnable: () -> Unit
+    ): BukkitTask
 
     fun runTaskRepeat(
         periodTicks: Long,
-        runnable: (BukkitTask) -> Unit
+        runnable: () -> Unit
     ) = runTaskRepeat(periodTicks, periodTicks, runnable)
 }

@@ -2,44 +2,51 @@ package kr.entree.enderwand.command
 
 import kr.entree.enderwand.collection.Reader
 import kr.entree.enderwand.command.argument.Argument
-import kr.entree.enderwand.command.argument.ArgumentedCommand
+import kr.entree.enderwand.command.argument.parse
 import kr.entree.enderwand.command.sender.Sender
 
 /**
  * Created by JunHyung Lim on 2020-01-08
  */
-inline fun <T : Sender> command(configure: CommandBuilder<T>.() -> Unit) =
-    CommandBuilder<T>().apply(configure).build()
+inline fun <S : Sender> command(configure: CommandBuilder<S>.() -> Unit) =
+    CommandBuilder<S>().apply(configure).build()
 
-@DslMarker
-annotation class CmdMarker
-
-@CmdMarker
 class CommandBuilder<S : Sender> {
     var aliases: Set<String> = mutableSetOf()
     var description: String = ""
     var permission: String = ""
-    var arguments: List<Argument> = emptyList()
+    var arguments: MutableList<Argument<*>> = mutableListOf()
     val childs = mutableMapOf<String, Command<S>>()
     val commands = mutableListOf<Command<S>>()
-    private lateinit var _executor: CommandContext<S, Reader<String>>.() -> Unit
-    private var _tabCompleter: CommandContext<S, Reader<String>>.() -> List<String> = { emptyList() }
+    lateinit var executor: CommandContext<S, Reader<String>>.() -> Unit
+    var tabCompleter: CommandContext<S, Reader<String>>.() -> List<String> = { emptyList() }
 
-    fun executor(executor: CommandContext<S, Reader<String>>.() -> Unit) {
-        this._executor = executor
+    fun executes(executor: CommandContext<S, Reader<String>>.() -> Unit) {
+        this.executor = executor
     }
 
-    fun tabCompleter(tabCompleter: CommandContext<S, Reader<String>>.() -> List<String>) {
-        this._tabCompleter = tabCompleter
-    }
-
-    inline fun arguments(configure: ArgumentedCommand<S>.() -> Unit) {
-        ArgumentedCommand<S>().let {
-            it.configure()
-            executor(it)
-            tabCompleter(it::tabComplete)
-            arguments = it.arguments
+    fun executes(
+        arguments: List<Argument<*>>,
+        receiver: CommandContext<S, List<Any>>.() -> Unit
+    ) {
+        this.arguments.addAll(arguments)
+        executes {
+            receiver(CommandContext(sender, arguments.parse(args)))
         }
+        tabCompletes {
+            val completer = arguments.getOrNull(args.remain() - 1)
+            if (completer != null) {
+                val input = args.last()
+                completer.tabComplete().filter { it.startsWith(input) }
+            } else {
+                args.pos -= arguments.size
+                tabCompleter(this)
+            }
+        }
+    }
+
+    fun tabCompletes(tabCompleter: CommandContext<S, Reader<String>>.() -> List<String>) {
+        this.tabCompleter = tabCompleter
     }
 
     inline fun child(label: String, configure: CommandBuilder<S>.() -> Unit) {
@@ -52,12 +59,16 @@ class CommandBuilder<S : Sender> {
         builder.aliases.forEach { childs[it] = cmd }
     }
 
+    operator fun <T> Argument<T>.unaryPlus() = arguments.add(this)
+
+    operator fun <T> Argument<T>.unaryMinus() = arguments.remove(this)
+
     fun build(): Command<S> {
         return if (childs.isEmpty()) {
-            StandardCommand(_executor, _tabCompleter, description, permission, arguments)
+            StandardCommand(executor, tabCompleter, description, permission, arguments)
         } else {
-            if (this::_executor.isInitialized) {
-                MapCommand(childs, _executor)
+            if (this::executor.isInitialized) {
+                MapCommand(childs, executor)
             } else {
                 MapCommand(childs)
             }

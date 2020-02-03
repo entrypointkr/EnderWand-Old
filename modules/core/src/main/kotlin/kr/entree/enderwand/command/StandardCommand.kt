@@ -18,7 +18,7 @@ class StandardCommand<S : Sender>(
     private val tabCompleter: CommandContext<S, Reader<String>>.() -> List<String>,
     override var description: String = "",
     override var permission: String = "",
-    override var arguments: List<Argument> = emptyList()
+    override var arguments: List<Argument<*>> = emptyList()
 ) : Command<S>, CommandDetailed {
     override fun execute(ctx: CommandContext<S, Reader<String>>) {
         try {

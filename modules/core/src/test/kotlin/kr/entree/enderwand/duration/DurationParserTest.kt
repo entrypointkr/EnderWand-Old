@@ -1,7 +1,8 @@
-package kr.entree.enderwand
+package kr.entree.enderwand.duration
 
-import kr.entree.enderwand.time.EnglishDurationParser
-import kr.entree.enderwand.time.KoreanDurationParser
+import kr.entree.enderwand.time.DURATION_FORMATTER_ENGLISH
+import kr.entree.enderwand.time.DURATION_PARSER_ENGLISH
+import kr.entree.enderwand.time.DURATION_PARSER_KOREAN
 import kr.entree.enderwand.time.toDurationKor
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ class DurationParserTest {
     fun english() {
         Assertions.assertEquals(
             Duration.parse("P1DT22H333M4444S"),
-            EnglishDurationParser.parse("1 days 22hours 333minute 4444sec")
+            DURATION_PARSER_ENGLISH.parse("1 days 22hours 333minute 4444sec")
         )
     }
 
@@ -24,7 +25,7 @@ class DurationParserTest {
     fun korean() {
         Assertions.assertEquals(
             Duration.parse("P1DT22H333M4444S"),
-            KoreanDurationParser.parse("1일 22시간 333분 4444초")
+            DURATION_PARSER_KOREAN.parse("1일 22시간 333분 4444초")
         )
     }
 

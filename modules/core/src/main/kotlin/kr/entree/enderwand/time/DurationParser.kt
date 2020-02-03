@@ -6,20 +6,18 @@ import java.time.temporal.ChronoUnit
 /**
  * Created by JunHyung Lim on 2020-01-28
  */
-interface DurationParser {
-    fun parse(line: String): Duration
-}
-
 class UnknownUnitException(val unit: String) : IllegalArgumentException()
 
-abstract class StandardDurationParser : DurationParser {
-    override fun parse(line: String): Duration {
+class DurationParser(
+    val unitParser: (String) -> ChronoUnit?
+) {
+    fun parse(line: String): Duration {
         val digits = StringBuilder()
         val letters = StringBuilder()
         var duration = Duration.ZERO
         fun plus() {
             if (letters.isNotEmpty()) {
-                val unit = parseUnit(letters.toString()) ?: throw UnknownUnitException(letters.toString())
+                val unit = unitParser(letters.toString()) ?: throw UnknownUnitException(letters.toString())
                 duration = duration.plus(digits.toString().toLong(), unit)
                 digits.clear()
                 letters.clear()
@@ -39,36 +37,32 @@ abstract class StandardDurationParser : DurationParser {
         plus()
         return duration
     }
-
-    abstract fun parseUnit(letters: String): ChronoUnit?
 }
 
-object KoreanDurationParser : StandardDurationParser() {
-    override fun parseUnit(letters: String) =
-        when (letters) {
-            "년" -> ChronoUnit.YEARS
-            "개월", "월" -> ChronoUnit.MONTHS
-            "일" -> ChronoUnit.DAYS
-            "시간", "시" -> ChronoUnit.HOURS
-            "분" -> ChronoUnit.MINUTES
-            "초" -> ChronoUnit.SECONDS
-            "밀리", "밀리초" -> ChronoUnit.MILLIS
-            "나노", "나노초" -> ChronoUnit.NANOS
-            else -> null
-        }
+val DURATION_PARSER_KOREAN = DurationParser {
+    when (it) {
+        "년" -> ChronoUnit.YEARS
+        "개월", "월" -> ChronoUnit.MONTHS
+        "일" -> ChronoUnit.DAYS
+        "시간", "시" -> ChronoUnit.HOURS
+        "분" -> ChronoUnit.MINUTES
+        "초" -> ChronoUnit.SECONDS
+        "밀리", "밀리초" -> ChronoUnit.MILLIS
+        "나노", "나노초" -> ChronoUnit.NANOS
+        else -> null
+    }
 }
 
-object EnglishDurationParser : StandardDurationParser() {
-    override fun parseUnit(letters: String) =
-        when (letters) {
-            "years", "year" -> ChronoUnit.YEARS
-            "months", "month" -> ChronoUnit.MONTHS
-            "days", "day" -> ChronoUnit.DAYS
-            "hours", "hour" -> ChronoUnit.HOURS
-            "minutes", "minute", "mins", "min" -> ChronoUnit.MINUTES
-            "seconds", "second", "secs", "sec" -> ChronoUnit.SECONDS
-            "milliseconds", "millisecond", "millis", "milli" -> ChronoUnit.MILLIS
-            "nanoseconds", "nanosecond", "nanos", "nano" -> ChronoUnit.NANOS
-            else -> null
-        }
+val DURATION_PARSER_ENGLISH = DurationParser {
+    when (it) {
+        "years", "year" -> ChronoUnit.YEARS
+        "months", "month" -> ChronoUnit.MONTHS
+        "days", "day" -> ChronoUnit.DAYS
+        "hours", "hour" -> ChronoUnit.HOURS
+        "minutes", "minute", "mins", "min" -> ChronoUnit.MINUTES
+        "seconds", "second", "secs", "sec" -> ChronoUnit.SECONDS
+        "milliseconds", "millisecond", "millis", "milli" -> ChronoUnit.MILLIS
+        "nanoseconds", "nanosecond", "nanos", "nano" -> ChronoUnit.NANOS
+        else -> null
+    }
 }

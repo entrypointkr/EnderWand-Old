@@ -5,7 +5,7 @@ import kr.entree.enderwand.command.sender.Sender
 /**
  * Created by JunHyung Lim on 2020-01-08
  */
-open class CommandContext<S : Sender, T : List<Any>>(
+open class CommandContext<S : Sender, T>(
     val sender: S,
     val args: T
 ) {

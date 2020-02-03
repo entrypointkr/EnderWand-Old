@@ -7,6 +7,8 @@ fun <T> List<T>.toReader() = Reader(this)
 
 fun <T> Array<T>.toReader() = toList().toReader()
 
+fun <T> readerOf(vararg elements: T) = listOf(*elements).toReader()
+
 class Reader<T>(
     private val list: List<T>
 ) : List<T> by list {

@@ -1,6 +1,7 @@
 package kr.entree.enderwand.command
 
 import kr.entree.enderwand.command.argument.Argument
+import kr.entree.enderwand.command.sender.Sender
 
 /**
  * Created by JunHyung Lim on 2020-01-16
@@ -8,7 +9,7 @@ import kr.entree.enderwand.command.argument.Argument
 interface CommandDetailed {
     val description: String
     val permission: String
-    val arguments: List<Argument>
+    val arguments: List<Argument<*>>
 }
 
 object EmptyCommandDetailed : CommandDetailed {
@@ -16,6 +17,6 @@ object EmptyCommandDetailed : CommandDetailed {
         get() = ""
     override val permission: String
         get() = ""
-    override val arguments: List<Argument>
+    override val arguments: List<Argument<out Any>>
         get() = emptyList()
 }

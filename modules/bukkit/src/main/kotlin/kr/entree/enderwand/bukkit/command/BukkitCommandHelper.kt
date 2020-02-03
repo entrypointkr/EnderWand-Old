@@ -108,10 +108,11 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
                     is CommandMapped<*> -> {
                         buildString {
                             append(argument).append(' ')
-                            append(command.childs.map {
-                                it.key
-                            }.filter {
+                            val keys = command.childs.map { it.key }
+                            append(keys.filter {
                                 it.unicodeBlock == labelUnicode
+                            }.ifEmpty {
+                                keys
                             }.joinToString("|", "<", ">", 3, "..."))
                         }
                     }

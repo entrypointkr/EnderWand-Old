@@ -13,16 +13,16 @@ class BukkitSyncScheduler(
     val scheduler: UglyScheduler = Bukkit.getScheduler()
 ) : BukkitScheduler() {
     override fun runTask(
-        runnable: (BukkitTask) -> Unit
-    ) = scheduler.runTask(plugin, runnable)
+        runnable: () -> Unit
+    ): BukkitTask = scheduler.runTask(plugin, runnable)
 
     override fun runTaskLater(
-        delayTicks: Long, runnable: (BukkitTask) -> Unit
-    ) = scheduler.runTaskLater(plugin, runnable, delayTicks)
+        delayTicks: Long, runnable: () -> Unit
+    ): BukkitTask = scheduler.runTaskLater(plugin, runnable, delayTicks)
 
     override fun runTaskRepeat(
         delayTicks: Long,
         periodTicks: Long,
-        runnable: (BukkitTask) -> Unit
-    ) = scheduler.runTaskTimer(plugin, runnable, delayTicks, periodTicks)
+        runnable: () -> Unit
+    ): BukkitTask = scheduler.runTaskTimer(plugin, runnable, delayTicks, periodTicks)
 }

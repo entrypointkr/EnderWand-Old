@@ -1,11 +1,15 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package kr.entree.enderwand.command.argument
 
-import kr.entree.enderwand.command.NotDoubleException
-import kr.entree.enderwand.command.NotIntException
+import kr.entree.enderwand.collection.Reader
+import kr.entree.enderwand.command.*
 import kr.entree.enderwand.command.sender.Sender
+import kr.entree.enderwand.data.*
+import kr.entree.enderwand.time.DURATION_PARSER_ENGLISH
+import kr.entree.enderwand.time.DURATION_PARSER_KOREAN
 import kr.entree.enderwand.time.DurationParser
-import kr.entree.enderwand.time.EnglishDurationParser
-import kr.entree.enderwand.time.KoreanDurationParser
+import java.time.Duration
 
 /**
  * Created by JunHyung Lim on 2020-01-28
@@ -17,36 +21,56 @@ val PARSER_INT: Parser = {
 val PARSER_DOUBLE: Parser = {
     it.read().run { toDoubleOrNull() ?: throw NotDoubleException(this) }
 }
-val PARSER_DURATION_ENGLISH: Parser = {
-    EnglishDurationParser.parse(it.read())
+
+class DurationArgumentParser(private val parser: DurationParser) : Parser {
+    override fun invoke(reader: Reader<String>) = parser.parse(reader.read())
 }
+
 val PARSER_DURATION_KOREAN: Parser = {
-    KoreanDurationParser.parse(it.read())
+    DURATION_PARSER_KOREAN.parse(it.read())
 }
 
-inline fun <S : Sender> ArgumentedCommand<S>.string(
+fun Iterable<Argument<*>>.parse(reader: Reader<String>): List<Any> {
+    val ret = mutableListOf<Any>()
+    forEachIndexed { index, argument ->
+        if (!reader.canRead()) {
+            if (argument.optional) {
+                argument.default?.let { ret.add(it) }
+                return@forEachIndexed
+            }
+            throw ArgumentParseException(index)
+        }
+        try {
+            ret += argument.parse(reader)
+        } catch (ex: Exception) {
+            throw ArgumentParseException(index, ex)
+        }
+    }
+    return ret
+}
+
+inline fun <S : Sender> CommandBuilder<S>.string(
     description: String = "string",
-    configure: Argument.() -> Unit = {}
-) = +Argument(description, parser = PARSER_STRING).apply(configure)
+    configure: Argument<String>.() -> Unit = {}
+) = Argument<String>(description, parser = PARSER_STRING).apply(configure)
 
-inline fun <S : Sender> ArgumentedCommand<S>.int(
+inline fun <S : Sender> CommandBuilder<S>.int(
     description: String = "int",
-    configure: Argument.() -> Unit = {}
-) = +Argument(description, parser = PARSER_INT).apply(configure)
+    configure: Argument<Int>.() -> Unit = {}
+) = Argument<Int>(description, parser = PARSER_INT).apply(configure)
 
-inline fun <S : Sender> ArgumentedCommand<S>.double(
+inline fun <S : Sender> CommandBuilder<S>.double(
     description: String = "double",
-    configure: Argument.() -> Unit = {}
-) = +Argument(description, parser = PARSER_DOUBLE).apply(configure)
+    configure: Argument<Double>.() -> Unit = {}
+) = Argument<Double>(description, parser = PARSER_DOUBLE).apply(configure)
 
-inline fun <S : Sender> ArgumentedCommand<S>.duration(
+inline fun <S : Sender> CommandBuilder<S>.duration(
     description: String = "duration",
-    parser: DurationParser = EnglishDurationParser,
-    configure: Argument.() -> Unit = {}
-) = +Argument(description, parser = PARSER_DURATION_ENGLISH)
+    parser: DurationParser = DURATION_PARSER_ENGLISH,
+    configure: Argument<Duration>.() -> Unit = {}
+) = Argument<Duration>(description, parser = DurationArgumentParser(parser))
 
-inline fun <S : Sender> ArgumentedCommand<S>.durationKor(
+inline fun <S : Sender> CommandBuilder<S>.durationKor(
     description: String = "시간",
-    parser: DurationParser = KoreanDurationParser,
-    configure: Argument.() -> Unit = {}
-) = +Argument(description, parser = PARSER_DURATION_KOREAN)
+    configure: Argument<Duration>.() -> Unit = {}
+) = Argument<Duration>(description, parser = PARSER_DURATION_KOREAN)

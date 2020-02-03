@@ -18,7 +18,7 @@ class CommandTest {
         var result = 0
         var msgReceived = false
         command<Sender> {
-            executor {
+            executes {
                 result = args[0].toInt() + args[1].toInt()
                 sender.sendMessage(msg)
             }
