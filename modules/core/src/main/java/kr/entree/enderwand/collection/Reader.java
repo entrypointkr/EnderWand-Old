@@ -42,5 +42,16 @@ public class Reader<T> {
         return canRead() ? peek() : null;
     }
 
+    public T read() {
+        return list.get(pos++);
+    }
 
+    @Nullable
+    public T readOrNull() {
+        return canRead() ? read() : null;
+    }
+
+    public int remain() {
+        return Math.max(list.size() - pos, 0);
+    }
 }
