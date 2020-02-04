@@ -1,5 +1,5 @@
 rootProject.name = 'enderwand'
-includeFlat 'core', 'bukkit', 'core:kotlin', 'bukkit:kotlin'
+includeFlat 'core', 'bukkit', 'core-kotlin', 'bukkit-kotlin'
 
 rootProject.children.each { project ->
     project.with {

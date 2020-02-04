@@ -15,15 +15,22 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'org.jetbrains.kotlin.jvm'
+    def kotlin = name.endsWith('-kotlin')
+    if (kotlin) {
+        apply plugin: 'org.jetbrains.kotlin.jvm'
+    } else {
+        apply plugin: 'java'
+    }
 
     repositories {
         jcenter()
     }
 
     dependencies {
-        implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-        implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+        if (kotlin) {
+            implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+            implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+        }
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
         testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
         testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
@@ -35,12 +42,19 @@ subprojects {
 
     task makeSrcDirs {
         sourceSets {
-            main.kotlin.srcDirs*.mkdirs()
+            if (kotlin) {
+                main.kotlin.srcDirs*.mkdirs()
+                test.kotlin.srcDirs*.mkdirs()
+            } else {
+                main.java.srcDirs*.mkdirs()
+                test.java.srcDirs*.mkdirs()
+            }
             main.resources.srcDirs*.mkdirs()
-            test.kotlin.srcDirs*.mkdirs()
             test.resources.srcDirs*.mkdirs()
         }
     }
 
-    [compileKotlin, compileTestKotlin]*.kotlinOptions*.jvmTarget = 1.8
+    if (kotlin) {
+        [compileKotlin, compileTestKotlin]*.kotlinOptions*.jvmTarget = 1.8
+    }
 }
