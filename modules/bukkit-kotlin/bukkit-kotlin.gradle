@@ -55,11 +55,11 @@ task nostdlibJar(type: ShadowJar) {
     }
 }
 
-jar.dependsOn(shadowJar, nostdlibJar)
+jar.dependsOn shadowJar, nostdlibJar
 
 publishing {
     publications {
-        EnderWandPublication(MavenPublication) {
+        bukkitKotlin(MavenPublication) {
             from components.java
             artifact shadowJar
             afterEvaluate {
