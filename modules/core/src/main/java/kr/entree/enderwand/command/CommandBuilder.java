@@ -47,17 +47,22 @@ public class CommandBuilder<S extends Sender> {
         return this;
     }
 
-    public CommandBuilder<S> child(String label, Command command) {
+    public CommandBuilder<S> child(String label, Command<S> command) {
         childs.put(label, command);
         return this;
     }
 
     public CommandBuilder<S> child(String label, CommandBuilder<S> builder) {
-        Command command = builder.build();
+        Command<S> command = builder.build();
         child(label, command);
         for (String alias : builder.aliases) {
             child(alias, command);
         }
+        return this;
+    }
+
+    public <T> CommandBuilder<S> child(Argument<T> argument, CommandBuilder<S> builder) {
+        // TODO
         return this;
     }
 
