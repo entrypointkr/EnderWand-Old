@@ -2,6 +2,7 @@ package kr.entree.enderwand.command.executor;
 
 import kr.entree.enderwand.command.CommandContext;
 import kr.entree.enderwand.command.sender.Sender;
+import lombok.val;
 
 import java.util.Map;
 
@@ -19,6 +20,11 @@ public class MapExecutor<S extends Sender, T extends CommandExecutor<S>> impleme
 
     @Override
     public void execute(CommandContext<S> ctx) {
-        // TODO
+        val input = ctx.getReader().read();
+        CommandExecutor<S> sub = map.get(input);
+        if (sub == null) {
+            sub = defaultExecutor;
+        }
+        sub.execute(ctx);
     }
 }

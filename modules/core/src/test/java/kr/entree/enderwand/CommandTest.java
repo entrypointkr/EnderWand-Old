@@ -26,7 +26,7 @@ public class CommandTest {
     }
 
     Argument<Number> number() {
-        return new Argument<>();
+        return new Argument<>("number", reader -> Integer.parseInt(reader.read()));
     }
 
     @Test

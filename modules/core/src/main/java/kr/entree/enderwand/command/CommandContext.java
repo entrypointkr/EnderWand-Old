@@ -1,11 +1,11 @@
 package kr.entree.enderwand.command;
 
-import kr.entree.enderwand.collection.Lists;
 import kr.entree.enderwand.command.sender.Sender;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +19,7 @@ public class CommandContext<S extends Sender> implements List<Object> {
     @Getter
     @Setter
     @Delegate
-    private List<Object> arguments = Lists.of();
+    private List<Object> arguments = new ArrayList<>();
 
     public CommandContext(S sender, StringReader reader) {
         this.sender = sender;

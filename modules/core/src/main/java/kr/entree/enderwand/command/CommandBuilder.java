@@ -7,6 +7,7 @@ import kr.entree.enderwand.command.executor.CommandExecutor;
 import kr.entree.enderwand.command.executor.MapExecutor;
 import kr.entree.enderwand.command.sender.Sender;
 import lombok.Getter;
+import lombok.val;
 
 import java.util.*;
 
@@ -62,7 +63,12 @@ public class CommandBuilder<S extends Sender> {
     }
 
     public <T> CommandBuilder<S> child(Argument<T> argument, CommandBuilder<S> builder) {
-        // TODO
+        val command = builder.build();
+        executes(ctx -> {
+            val parsed = argument.parse(ctx.getReader());
+            ctx.getArguments().add(parsed);
+            command.execute(ctx);
+        });
         return this;
     }
 
@@ -77,10 +83,15 @@ public class CommandBuilder<S extends Sender> {
         } else {
             return new MapCommand<>(
                     new MapExecutor<>(childs, ctx -> {
-                        // TODO
+                        throw new RuntimeException("");
                     }),
                     new MapCompleter<>(childs)
             );
         }
+    }
+
+    public static void main(String[] args) {
+        Map<String, Number> map = new HashMap<>();
+        map.getOrDefault("a", (Integer) 3);
     }
 }
