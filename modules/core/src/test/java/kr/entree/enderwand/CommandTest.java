@@ -44,4 +44,19 @@ public class CommandTest {
                 .execute(new CommandContext<>(ConsoleSender.INSTANCE, StringReader.of(input)));
         assertEquals(result.get(), 3);
     }
+
+    @Test
+    public void fallthrough() {
+        String input = "";
+        AtomicInteger result = new AtomicInteger();
+        new CommandBuilder<>()
+                .executes(ctx -> result.set(1))
+                .child("abc", new CommandBuilder<>()
+                        .executes(ctx -> {
+                            throw new IllegalStateException("Wrong place.");
+                        }))
+                .build()
+                .execute(new CommandContext<>(ConsoleSender.INSTANCE, StringReader.of(input)));
+        assertEquals(result.get(), 1);
+    }
 }
