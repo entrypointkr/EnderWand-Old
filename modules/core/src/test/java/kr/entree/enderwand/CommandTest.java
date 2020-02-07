@@ -1,10 +1,6 @@
 package kr.entree.enderwand;
 
-import kr.entree.enderwand.collection.Reader;
-import kr.entree.enderwand.command.Argument;
-import kr.entree.enderwand.command.Command;
-import kr.entree.enderwand.command.CommandBuilder;
-import kr.entree.enderwand.command.CommandContext;
+import kr.entree.enderwand.command.*;
 import kr.entree.enderwand.command.sender.ConsoleSender;
 import kr.entree.enderwand.command.sender.Sender;
 import org.junit.jupiter.api.Test;
@@ -12,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -24,7 +21,7 @@ public class CommandTest {
         Command<Sender> command = new CommandBuilder<>()
                 .executes(ctx -> invoked.set(true))
                 .build();
-        command.execute(new CommandContext<>(ConsoleSender.INSTANCE, Reader.of()));
+        command.execute(new CommandContext<>(ConsoleSender.INSTANCE, StringReader.ofEmpty()));
         assertTrue(invoked.get());
     }
 
@@ -36,6 +33,15 @@ public class CommandTest {
     public void composition() {
         String input = "1 plus 2";
         AtomicInteger result = new AtomicInteger();
-        // TODO
+        new CommandBuilder<>()
+                .child(number(), new CommandBuilder<>()
+                        .child("plus", new CommandBuilder<>()
+                                .child(number(), new CommandBuilder<>()
+                                        .executes(ctx -> {
+
+                                        }))))
+                .build()
+                .execute(new CommandContext<>(ConsoleSender.INSTANCE, StringReader.of(input)));
+        assertEquals(result.get(), 3);
     }
 }

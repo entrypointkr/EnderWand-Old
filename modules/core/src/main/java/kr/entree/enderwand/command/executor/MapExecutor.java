@@ -1,6 +1,5 @@
 package kr.entree.enderwand.command.executor;
 
-import kr.entree.enderwand.collection.Reader;
 import kr.entree.enderwand.command.CommandContext;
 import kr.entree.enderwand.command.sender.Sender;
 
@@ -19,7 +18,7 @@ public class MapExecutor<S extends Sender, T extends CommandExecutor<S>> impleme
     }
 
     @Override
-    public void execute(CommandContext<S, Reader<String>> ctx) {
+    public void execute(CommandContext<S> ctx) {
         // TODO
     }
 }

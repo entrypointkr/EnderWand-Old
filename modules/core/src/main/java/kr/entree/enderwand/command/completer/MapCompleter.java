@@ -1,6 +1,5 @@
 package kr.entree.enderwand.command.completer;
 
-import kr.entree.enderwand.collection.Reader;
 import kr.entree.enderwand.command.CommandContext;
 import kr.entree.enderwand.command.sender.Sender;
 
@@ -18,7 +17,7 @@ public class MapCompleter<S extends Sender, T extends TabCompleter<S>> implement
     }
 
     @Override
-    public List<String> tabComplete(CommandContext<S, Reader<String>> ctx) {
+    public List<String> tabComplete(CommandContext<S> ctx) {
         return null;
     }
 }

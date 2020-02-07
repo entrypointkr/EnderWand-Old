@@ -1,6 +1,5 @@
 package kr.entree.enderwand.command;
 
-import kr.entree.enderwand.collection.Reader;
 import kr.entree.enderwand.command.completer.MapCompleter;
 import kr.entree.enderwand.command.executor.MapExecutor;
 import kr.entree.enderwand.command.sender.Sender;
@@ -20,12 +19,12 @@ public class MapCommand<S extends Sender> implements Command<S> {
     }
 
     @Override
-    public void execute(CommandContext<S, Reader<String>> ctx) {
+    public void execute(CommandContext<S> ctx) {
         executor.execute(ctx);
     }
 
     @Override
-    public List<String> tabComplete(CommandContext<S, Reader<String>> ctx) {
+    public List<String> tabComplete(CommandContext<S> ctx) {
         return tabCompleter.tabComplete(ctx);
     }
 }

@@ -1,6 +1,5 @@
 package kr.entree.enderwand.command;
 
-import kr.entree.enderwand.collection.Reader;
 import kr.entree.enderwand.command.completer.TabCompleter;
 import kr.entree.enderwand.command.executor.CommandExecutor;
 import kr.entree.enderwand.command.sender.Sender;
@@ -32,12 +31,12 @@ public class StandardCommand<S extends Sender> implements Command<S>, CommandDet
     }
 
     @Override
-    public List<String> tabComplete(CommandContext<S, Reader<String>> ctx) {
+    public List<String> tabComplete(CommandContext<S> ctx) {
         return tabCompleter.tabComplete(ctx);
     }
 
     @Override
-    public void execute(CommandContext<S, Reader<String>> ctx) {
+    public void execute(CommandContext<S> ctx) {
         executor.execute(ctx);
     }
 
