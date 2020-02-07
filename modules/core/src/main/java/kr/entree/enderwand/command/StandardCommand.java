@@ -1,5 +1,6 @@
 package kr.entree.enderwand.command;
 
+import kr.entree.enderwand.command.argument.Argument;
 import kr.entree.enderwand.command.completer.TabCompleter;
 import kr.entree.enderwand.command.executor.CommandExecutor;
 import kr.entree.enderwand.command.sender.Sender;

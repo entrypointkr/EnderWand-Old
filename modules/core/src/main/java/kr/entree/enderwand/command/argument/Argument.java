@@ -1,4 +1,6 @@
-package kr.entree.enderwand.command;
+package kr.entree.enderwand.command.argument;
+
+import kr.entree.enderwand.command.StringReader;
 
 import java.util.function.Function;
 

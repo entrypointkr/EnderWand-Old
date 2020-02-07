@@ -1,6 +1,7 @@
 package kr.entree.enderwand.command;
 
 import kr.entree.enderwand.collection.Sets;
+import kr.entree.enderwand.command.argument.Argument;
 import kr.entree.enderwand.command.completer.MapCompleter;
 import kr.entree.enderwand.command.completer.TabCompleter;
 import kr.entree.enderwand.command.executor.CommandExecutor;

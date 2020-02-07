@@ -1,5 +1,7 @@
 package kr.entree.enderwand.command;
 
+import kr.entree.enderwand.command.argument.Argument;
+
 import java.util.List;
 
 /**

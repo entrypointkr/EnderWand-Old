@@ -1,6 +1,10 @@
 package kr.entree.enderwand;
 
-import kr.entree.enderwand.command.*;
+import kr.entree.enderwand.command.Command;
+import kr.entree.enderwand.command.CommandBuilder;
+import kr.entree.enderwand.command.CommandContext;
+import kr.entree.enderwand.command.StringReader;
+import kr.entree.enderwand.command.argument.Arguments;
 import kr.entree.enderwand.command.sender.ConsoleSender;
 import kr.entree.enderwand.command.sender.Sender;
 import org.junit.jupiter.api.Test;
@@ -25,18 +29,14 @@ public class CommandTest {
         assertTrue(invoked.get());
     }
 
-    Argument<Number> number() {
-        return new Argument<>("number", reader -> Integer.parseInt(reader.read()));
-    }
-
     @Test
     public void composition() {
         String input = "1 plus 2";
         AtomicInteger result = new AtomicInteger();
         new CommandBuilder<>()
-                .child(number(), new CommandBuilder<>()
+                .child(Arguments.ints("int"), new CommandBuilder<>()
                         .child("plus", new CommandBuilder<>()
-                                .child(number(), new CommandBuilder<>()
+                                .child(Arguments.ints("int"), new CommandBuilder<>()
                                         .executes(ctx -> {
                                             result.set(ctx.getInt(0) + ctx.getInt(1));
                                         }))))
