@@ -38,7 +38,7 @@ public class CommandTest {
                         .child("plus", new CommandBuilder<>()
                                 .child(number(), new CommandBuilder<>()
                                         .executes(ctx -> {
-
+                                            result.set(ctx.getInt(0) + ctx.getInt(1));
                                         }))))
                 .build()
                 .execute(new CommandContext<>(ConsoleSender.INSTANCE, StringReader.of(input)));
