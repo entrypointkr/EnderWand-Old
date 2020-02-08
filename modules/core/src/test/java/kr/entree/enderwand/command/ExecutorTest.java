@@ -1,4 +1,4 @@
-package kr.entree.enderwand;
+package kr.entree.enderwand.command;
 
 import kr.entree.enderwand.command.Command;
 import kr.entree.enderwand.command.CommandBuilder;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by JunHyung Lim on 2020-02-04
  */
-public class CommandTest {
+public class ExecutorTest {
     @Test
     public void simple() {
         AtomicBoolean invoked = new AtomicBoolean();
