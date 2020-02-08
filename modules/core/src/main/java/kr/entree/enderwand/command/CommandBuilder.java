@@ -27,7 +27,7 @@ public class CommandBuilder<S extends Sender> {
     private CommandExecutor<S> executor = null;
     private TabCompleter<S> completer = null;
     @Getter
-    private final Map<String, Command<S>> childs = new HashMap<>();
+    private final Map<String, Command<S>> childs = new LinkedHashMap<>();
 
     public CommandBuilder<S> aliases(Set<String> aliases) {
         this.aliases = aliases;

@@ -23,7 +23,7 @@ public class TabCompleterTest {
     public void map() {
         String input = "";
         assertEquals(
-                Lists.of("a", "abc"),
+                Lists.of("a", "abc", "deep"),
                 command.tabComplete(contextConsoleOf(input))
         );
     }
