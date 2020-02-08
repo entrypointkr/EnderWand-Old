@@ -1,8 +1,10 @@
 package kr.entree.enderwand.command.executor;
 
 import kr.entree.enderwand.command.CommandContext;
+import kr.entree.enderwand.command.StringReader;
 import kr.entree.enderwand.command.sender.Sender;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -13,18 +15,20 @@ public class MapExecutor<S extends Sender, T extends CommandExecutor<S>> impleme
     private final Map<String, T> map;
     private final CommandExecutor<S> defaultExecutor;
 
-    public MapExecutor(Map<String, T> map, CommandExecutor<S> defaultExecutor) {
+    public MapExecutor(@NotNull Map<String, T> map, @NotNull CommandExecutor<S> defaultExecutor) {
         this.map = map;
         this.defaultExecutor = defaultExecutor;
     }
 
+    private CommandExecutor<S> getExecutor(StringReader reader) {
+        val input = reader.readOrNull();
+        val sub = input != null ? map.get(input) : null;
+        return sub != null ? sub : defaultExecutor;
+    }
+
     @Override
     public void execute(CommandContext<S> ctx) {
-        val input = ctx.getReader().read();
-        CommandExecutor<S> sub = map.get(input);
-        if (sub == null) {
-            sub = defaultExecutor;
-        }
-        sub.execute(ctx);
+        val executor = getExecutor(ctx.getReader());
+        executor.execute(ctx);
     }
 }

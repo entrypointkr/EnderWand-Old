@@ -83,16 +83,9 @@ public class CommandBuilder<S extends Sender> {
             return new StandardCommand<>(executor, completer, description, permission, arguments);
         } else {
             return new MapCommand<>(
-                    new MapExecutor<>(childs, ctx -> {
-                        throw new RuntimeException("");
-                    }),
+                    new MapExecutor<>(childs, executor),
                     new MapCompleter<>(childs)
             );
         }
-    }
-
-    public static void main(String[] args) {
-        Map<String, Number> map = new HashMap<>();
-        map.getOrDefault("a", (Integer) 3);
     }
 }

@@ -46,7 +46,7 @@ public class CommandTest {
     }
 
     @Test
-    public void fallthrough() {
+    public void executeDefault() {
         String input = "";
         AtomicInteger result = new AtomicInteger();
         new CommandBuilder<>()

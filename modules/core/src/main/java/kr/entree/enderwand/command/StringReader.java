@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.NoSuchElementException;
+
 /**
  * Created by JunHyung Lim on 2020-02-07
  */
@@ -40,16 +42,30 @@ public class StringReader {
         return true;
     }
 
-    public String peek() {
+    @Nullable
+    public String peekOrNull() {
         if (canRead()) {
             return string.substring(position, next);
         }
-        throw new IndexOutOfBoundsException();
+        return null;
+    }
+
+    public String peek() {
+        val peeked = peekOrNull();
+        if (peeked != null) {
+            return peeked;
+        }
+        throw new NoSuchElementException();
     }
 
     public String read() {
         val ret = peek();
         position = next + 1;
         return ret;
+    }
+
+    @Nullable
+    public String readOrNull() {
+        return canRead() ? read() : null;
     }
 }
