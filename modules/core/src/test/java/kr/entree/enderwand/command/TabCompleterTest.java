@@ -50,7 +50,7 @@ public class TabCompleterTest {
     public void mapDeep() {
         String input = "deep ";
         assertEquals(
-                Lists.of(),
+                Lists.of("a", "abc"),
                 command.tabComplete(contextConsoleOf(input))
         );
     }
