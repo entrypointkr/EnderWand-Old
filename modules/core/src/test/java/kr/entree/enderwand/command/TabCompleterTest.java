@@ -14,6 +14,9 @@ public class TabCompleterTest {
     private final Command<Sender> command = new CommandBuilder<>()
             .child("a", new CommandBuilder<>())
             .child("abc", new CommandBuilder<>())
+            .child("deep", new CommandBuilder<>()
+                    .child("a", new CommandBuilder<>())
+                    .child("abc", new CommandBuilder<>()))
             .build();
 
     @Test
@@ -30,6 +33,24 @@ public class TabCompleterTest {
         String input = "ab";
         assertEquals(
                 Lists.of("abc"),
+                command.tabComplete(contextConsoleOf(input))
+        );
+    }
+
+    @Test
+    public void map3() {
+        String input = "abcd";
+        assertEquals(
+                Lists.of(),
+                command.tabComplete(contextConsoleOf(input))
+        );
+    }
+
+    @Test
+    public void mapDeep() {
+        String input = "deep ";
+        assertEquals(
+                Lists.of(),
                 command.tabComplete(contextConsoleOf(input))
         );
     }

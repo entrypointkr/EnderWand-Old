@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static kr.entree.enderwand.exception.Exceptions.runCatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,10 +17,28 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class StringReaderTest {
     @Test
     public void simple() {
-        StringReader reader = StringReader.of("1 plus 2");
+        String input = "1 plus 2";
+        StringReader reader = StringReader.of(input);
         List<String> data = Lists.of("1", "plus", "2");
-        for (int i = 0; i < 3; i++) {
-            assertEquals(data.get(i), reader.read());
+        for (int i = 0; i < data.size(); i++) {
+            int index = i;
+            String datum = data.get(index);
+            runCatching(() -> assertEquals(datum, reader.read()))
+                    .onFailureThrow((ex) -> new IllegalArgumentException("Fail on " + index, ex));
+        }
+        assertThrows(NoSuchElementException.class, reader::read);
+    }
+
+    @Test
+    public void spacing() {
+        String input = "1 plus 2 ";
+        StringReader reader = StringReader.of(input);
+        List<String> data = Lists.of("1", "plus", "2", "");
+        for (int i = 0; i < data.size(); i++) {
+            int index = i;
+            String datum = data.get(i);
+            runCatching(() -> assertEquals(datum, reader.read()))
+                    .onFailureThrow((ex) -> new IllegalArgumentException("Fail on " + index, ex));
         }
         assertThrows(NoSuchElementException.class, reader::read);
     }

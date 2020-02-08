@@ -29,8 +29,8 @@ public class StringReader {
         return of("");
     }
 
-    public boolean canRead() {
-        if (position >= string.length()) {
+    public boolean canPeek() {
+        if (position > string.length()) {
             return false;
         }
         val spaceIndex = string.indexOf(' ', position);
@@ -44,7 +44,7 @@ public class StringReader {
 
     @Nullable
     public String peekOrNull() {
-        if (canRead()) {
+        if (canPeek()) {
             return string.substring(position, next);
         }
         return null;
@@ -66,6 +66,6 @@ public class StringReader {
 
     @Nullable
     public String readOrNull() {
-        return canRead() ? read() : null;
+        return canPeek() ? read() : null;
     }
 }
