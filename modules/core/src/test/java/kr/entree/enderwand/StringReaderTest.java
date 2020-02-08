@@ -5,6 +5,7 @@ import kr.entree.enderwand.command.StringReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,6 +21,6 @@ public class StringReaderTest {
         for (int i = 0; i < 3; i++) {
             assertEquals(data.get(i), reader.read());
         }
-        assertThrows(IndexOutOfBoundsException.class, reader::read);
+        assertThrows(NoSuchElementException.class, reader::read);
     }
 }
