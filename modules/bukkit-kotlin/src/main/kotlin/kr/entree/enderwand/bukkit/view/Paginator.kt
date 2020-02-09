@@ -109,14 +109,14 @@ class Paginator(
 
     fun button(item: () -> ItemStack) = Button<Paginator>(item)
 
-    inline fun extra(builder: ButtonMapBuilder<Paginator>.() -> Unit) =
-        ButtonMapBuilder(extraButtons).apply(builder)
+    inline fun extra(builder: ButtonMap<Paginator>.() -> Unit) =
+        ButtonMap.simple(extraButtons).apply(builder)
 
     operator fun Button<Paginator>.unaryPlus() = buttons.add(this)
 
     operator fun Iterable<Button<Paginator>>.unaryPlus() = buttons.addAll(this)
 
     operator fun Button<Paginator>.unaryMinus() = buttons.remove(this)
-    
+
     operator fun Iterable<Button<Paginator>>.unaryMinus() = buttons.removeAll(this)
 }

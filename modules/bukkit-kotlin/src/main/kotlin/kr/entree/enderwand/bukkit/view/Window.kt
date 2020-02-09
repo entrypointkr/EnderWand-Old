@@ -3,6 +3,8 @@ package kr.entree.enderwand.bukkit.view
 import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.inventory
+import kr.entree.enderwand.bukkit.item.item
+import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
@@ -13,14 +15,14 @@ import org.bukkit.inventory.Inventory
 fun window(
     title: String,
     row: Int,
-    configure: ButtonMapBuilder<Window>.() -> Unit
-) = Window(title, row, ButtonMapBuilder<Window>().apply(configure).map)
+    configure: Window.() -> Unit
+) = Window(title, row, mutableMapOf())
 
 class Window(
     val title: String,
     val row: Int,
-    val buttons: Map<Int, Button<Window>>
-) : DynamicView {
+    val buttons: MutableMap<Int, Button<Window>>
+) : DynamicView, ButtonMap<Window> {
     override fun create() = inventory(title, row) { update(this) }
 
     override fun onEvent(e: InventoryEvent) {
@@ -33,6 +35,20 @@ class Window(
     override fun update(inventory: Inventory) {
         for (i in 0 until inventory.size) {
             inventory.setItem(i, buttons[i]?.item?.invoke())
+        }
+    }
+
+    override infix fun Int.slotOn(button: Button<Window>) {
+        buttons[this] = button
+    }
+}
+
+fun main() {
+    window("abc", 3) {
+        3 slotOn button<Window> {
+            item(Material.PAPER)
+        }.onClick {
+
         }
     }
 }

@@ -5,19 +5,6 @@ import kr.entree.enderwand.bukkit.scheduler.scheduler
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.ItemStack
 
-/**
- * Created by JunHyung Lim on 2020-01-14
- */
-class ButtonMapBuilder<T>(
-    val map: MutableMap<Int, Button<T>> = mutableMapOf()
-) {
-    fun button(vararg slots: Int, item: () -> ItemStack) =
-        Button<T>(item).also { button -> slots.forEach { map[it] = button } }
-
-    fun button(slots: Collection<Int>, item: () -> ItemStack) =
-        Button<T>(item).also { btn -> slots.forEach { map[it] = btn } }
-}
-
 fun <T> button(item: () -> ItemStack) = Button<T>(item)
 
 class Button<T>(

@@ -1,14 +1,24 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'kr.entree:spigradle:1.1'
+    }
+}
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'kr.entree.spigradle' version '1.0.6'
     id 'maven-publish'
 }
+
+apply plugin: 'kr.entree.spigradle'
 
 spigot {
     name = 'EnderWand'
     authors = ['EntryPoint']
     apiVersion = '1.15'
-    softDepend = ['Vault', 'ProtocolLib', 'LuckPerms']
+    softDepends = ['Vault', 'ProtocolLib', 'LuckPerms']
 }
 
 repositories {
@@ -44,8 +54,8 @@ task nostdlibJar(type: ShadowJar) {
     group = 'shadow'
     archiveClassifier.set('nostdlib')
     doFirst {
-        spigot.softDepend.add('Spikot')
-        createPluginYaml.actions*.execute(createPluginYaml)
+        spigot.softDepends.add('Spikot')
+        spigotPluginYaml.actions*.execute(spigotPluginYaml)
     }
     from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
     configurations = [project.configurations.runtimeClasspath]
