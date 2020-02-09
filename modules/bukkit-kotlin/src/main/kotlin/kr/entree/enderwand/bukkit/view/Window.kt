@@ -3,8 +3,6 @@ package kr.entree.enderwand.bukkit.view
 import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.inventory
-import kr.entree.enderwand.bukkit.item.item
-import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
@@ -38,17 +36,7 @@ class Window(
         }
     }
 
-    override infix fun Int.slotOn(button: Button<Window>) {
+    override infix fun Int.slotOf(button: Button<Window>) {
         buttons[this] = button
-    }
-}
-
-fun main() {
-    window("abc", 3) {
-        3 slotOn button<Window> {
-            item(Material.PAPER)
-        }.onClick {
-
-        }
     }
 }
