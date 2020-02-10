@@ -27,9 +27,6 @@ class Button<T>(
 
 class ButtonContext<T>(
     val button: Button<T>,
-    event: InventoryEvent,
-    source: T
-) : ViewContext<T>(
-    event,
-    source
-)
+    override val event: InventoryEvent,
+    override val source: T
+) : ViewContext<T>

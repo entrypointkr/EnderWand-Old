@@ -8,7 +8,8 @@ import org.bukkit.event.inventory.InventoryEvent
 fun <T : ViewFlexible> ViewContext<T>.update() =
     source.update(event.view.topInventory)
 
-open class ViewContext<T>(
-    val event: InventoryEvent,
+interface ViewContext<T> {
+    val event: InventoryEvent
     val source: T
-)
+    val clicker get() = event.view.player
+}
