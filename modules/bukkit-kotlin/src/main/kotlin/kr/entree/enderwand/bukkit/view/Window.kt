@@ -14,7 +14,7 @@ fun window(
     title: String,
     row: Int,
     configure: Window.() -> Unit
-) = Window(title, row, mutableMapOf())
+) = Window(title, row, mutableMapOf()).apply(configure)
 
 class Window(
     val title: String,
