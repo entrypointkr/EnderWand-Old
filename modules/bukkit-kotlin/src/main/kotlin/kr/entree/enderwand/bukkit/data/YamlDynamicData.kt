@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.data
 
 import kr.entree.enderwand.data.DynamicData
+import kr.entree.enderwand.data.StandardData
 import kr.entree.enderwand.data.dataOf
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -10,8 +11,8 @@ import java.io.Writer
 /**
  * Created by JunHyung Lim on 2020-01-01
  */
-fun yamlDataOf(file: File, yamlData: YamlData) =
-    dataOf(file, YamlDynamicData(yamlData))
+inline fun yamlDataOf(file: File, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
+    dataOf(file, YamlDynamicData(yamlData)).apply(configure)
 
 class YamlDynamicData(
     private val data: YamlData
