@@ -5,5 +5,5 @@ package kr.entree.enderwand.reactor
  */
 data class ReactorContext<T>(
     val event: T,
-    var remove: Boolean = true
+    var isConsumed: Boolean = true
 )

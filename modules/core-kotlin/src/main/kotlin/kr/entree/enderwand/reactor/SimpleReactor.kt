@@ -16,7 +16,7 @@ class SimpleReactor<T> : Reactor<T> {
             val actor = iterator.next()
             val context = ReactorContext(value)
             actor(context)
-            if (context.remove) {
+            if (context.isConsumed) {
                 iterator.remove()
             }
         }
