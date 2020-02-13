@@ -32,9 +32,9 @@ class StandardData(
     override fun load() = useReader { load(it) }
 
     inline fun loadAsync(
-        asyncRunner: (() -> Unit) -> Unit = {
+        asyncRunner: (() -> Unit) -> Any = {
             GlobalScope.launch { it() }
-        }, crossinline syncRunner: (() -> Unit) -> Unit
+        }, crossinline syncRunner: (() -> Unit) -> Any
     ) {
         asyncRunner {
             useReader {

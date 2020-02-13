@@ -1,7 +1,10 @@
 package kr.entree.enderwand.bukkit
 
 import com.google.gson.JsonParser
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kr.entree.enderwand.bukkit.command.CommandManager
+import kr.entree.enderwand.bukkit.coroutine.scope
 import kr.entree.enderwand.bukkit.internal.commandMap
 import kr.entree.enderwand.bukkit.lang.LanguageManager
 import kr.entree.enderwand.bukkit.plugin.registerListeners
@@ -26,10 +29,15 @@ class EnderWand : JavaPlugin() {
     val eventReactor = EventReactor()
 
     override fun onEnable() {
-        runCatching {
-            languageManager.loadFromResource(classLoader)
-        }.onFailure { logger.warning("Failed to loading languages.") }
+        runCatching { languageManager.loadFromResource(classLoader) }
+            .onFailure { logger.warning("Failed to loading languages.") }
         registerListeners(viewManager, eventReactor)
+        scope.launch {
+            println("!@!@#!@#!$@!$!$@!$!@$")
+            println(Thread.currentThread().name)
+            delay(5000)
+            println(Thread.currentThread().name)
+        }
     }
 }
 
