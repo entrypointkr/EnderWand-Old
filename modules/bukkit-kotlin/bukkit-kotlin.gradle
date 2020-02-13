@@ -65,7 +65,7 @@ task nostdlibJar(type: ShadowJar) {
     }
 }
 
-jar.dependsOn shadowJar, nostdlibJar
+build.dependsOn shadowJar, nostdlibJar
 
 publishing {
     publications {
