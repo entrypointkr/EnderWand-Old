@@ -9,7 +9,7 @@ import kotlin.coroutines.CoroutineContext
  * Created by JunHyung Lim on 2020-01-09
  */
 @UseExperimental(InternalCoroutinesApi::class)
-class SchedulerDispatcher(private val scheduler: Scheduler) : MainCoroutineDispatcher(), Delay {
+class SchedulerDispatcher(private val scheduler: Scheduler) : CoroutineDispatcher(), Delay {
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         scheduler.run { block.run() }
     }
@@ -27,7 +27,4 @@ class SchedulerDispatcher(private val scheduler: Scheduler) : MainCoroutineDispa
     override fun isDispatchNeeded(context: CoroutineContext): Boolean {
         return !scheduler.isPrimaryThread()
     }
-
-    override val immediate: MainCoroutineDispatcher
-        get() = this
 }
