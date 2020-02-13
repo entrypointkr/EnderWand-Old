@@ -24,7 +24,5 @@ class SchedulerDispatcher(private val scheduler: Scheduler) : CoroutineDispatche
         continuation.invokeOnCancellation { task.cancel() }
     }
 
-    override fun isDispatchNeeded(context: CoroutineContext): Boolean {
-        return !scheduler.isPrimaryThread()
-    }
+    override fun isDispatchNeeded(context: CoroutineContext) = !scheduler.isPrimaryThread()
 }
