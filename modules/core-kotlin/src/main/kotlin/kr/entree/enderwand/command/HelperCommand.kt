@@ -9,12 +9,12 @@ import kr.entree.enderwand.command.tabcompleter.TabCompleter
  * Created by JunHyung Lim on 2020-01-09
  */
 object DefaultCommandHelper : (CommandTrouble) -> Unit {
-    fun handle(th: Throwable, trouble: CommandTrouble) {
+    fun handle(trouble: CommandTrouble) {
         trouble.sender.sendMessage("Invalid command usage.")
     }
 
     override fun invoke(trouble: CommandTrouble) {
-        handle(trouble.exception, trouble)
+        handle(trouble)
     }
 }
 

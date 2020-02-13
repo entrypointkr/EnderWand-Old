@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
 
 package kr.entree.enderwand.command.argument
 

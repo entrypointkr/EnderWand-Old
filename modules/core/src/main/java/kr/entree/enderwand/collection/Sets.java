@@ -11,6 +11,7 @@ import java.util.Set;
  */
 @UtilityClass
 public class Sets {
+    @SafeVarargs
     public static <T> Set<T> of(T... values) {
         return new HashSet<>(Arrays.asList(values));
     }
