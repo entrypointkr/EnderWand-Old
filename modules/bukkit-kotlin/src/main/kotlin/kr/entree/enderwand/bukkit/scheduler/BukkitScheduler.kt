@@ -5,6 +5,7 @@ import kr.entree.enderwand.data.StandardData
 import kr.entree.enderwand.data.autoSave
 import kr.entree.enderwand.scheduler.Scheduler
 import kr.entree.enderwand.time.minutes
+import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import java.time.Duration
 
@@ -26,6 +27,8 @@ fun StandardData.autoSave(plugin: Plugin = enderWand, period: Duration = 15.minu
 
 abstract class BukkitScheduler : Scheduler {
     override fun run(runnable: () -> Unit) = BukkitTask(runTask { runnable() })
+
+    override fun isPrimaryThread() = Bukkit.isPrimaryThread()
 
     fun runTaskLater(
         delay: Duration,

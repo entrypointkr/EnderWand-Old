@@ -18,4 +18,6 @@ interface Scheduler : Runner {
     fun runRepeat(delay: Duration, period: Duration, runnable: () -> Unit): Task
 
     fun runRepeat(period: Duration, runnable: () -> Unit) = runRepeat(period, period, runnable)
+
+    fun isPrimaryThread(): Boolean
 }
