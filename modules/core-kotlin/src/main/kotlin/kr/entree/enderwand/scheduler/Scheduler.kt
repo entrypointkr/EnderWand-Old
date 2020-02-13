@@ -6,12 +6,16 @@ import java.time.Duration
 /**
  * Created by JunHyung Lim on 2019-12-05
  */
-typealias Runner = (() -> Unit) -> Unit
-
-fun Scheduler.runRepeat(period: Duration, runnable: () -> Unit) = runRepeat(period, period, runnable)
+typealias Runner = (() -> Unit) -> Task
 
 interface Scheduler : Runner {
-    fun runLater(delay: Duration, runnable: () -> Unit)
+    fun run(runnable: () -> Unit): Task
 
-    fun runRepeat(delay: Duration, period: Duration, runnable: () -> Unit)
+    override fun invoke(runnable: () -> Unit) = run(runnable)
+
+    fun runLater(delay: Duration, runnable: () -> Unit): Task
+
+    fun runRepeat(delay: Duration, period: Duration, runnable: () -> Unit): Task
+
+    fun runRepeat(period: Duration, runnable: () -> Unit) = runRepeat(period, period, runnable)
 }

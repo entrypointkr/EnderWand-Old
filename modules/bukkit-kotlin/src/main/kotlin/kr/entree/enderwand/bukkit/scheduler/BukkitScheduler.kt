@@ -6,10 +6,9 @@ import kr.entree.enderwand.data.autoSave
 import kr.entree.enderwand.scheduler.Scheduler
 import kr.entree.enderwand.time.minutes
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 
-typealias UglyScheduler = org.bukkit.scheduler.BukkitScheduler
+import org.bukkit.scheduler.BukkitTask as OriginalTask
 
 /**
  * Created by JunHyung Lim on 2020-01-06
@@ -26,29 +25,23 @@ fun StandardData.autoSave(plugin: Plugin = enderWand, period: Duration = 15.minu
     autoSave(plugin.scheduler, plugin.schedulerAsync, period)
 
 abstract class BukkitScheduler : Scheduler {
-    override fun invoke(
-        runnable: () -> Unit
-    ) {
-        runTask { runnable() }
-    }
+    override fun run(runnable: () -> Unit) = BukkitTask(runTask { runnable() })
 
     fun runTaskLater(
         delay: Duration,
         runnable: () -> Unit
-    ): BukkitTask = runTaskLater(delay.toTicks(), runnable)
+    ) = BukkitTask(runTaskLater(delay.toTicks(), runnable))
 
     override fun runLater(
         delay: Duration,
         runnable: () -> Unit
-    ) {
-        runTaskLater(delay) { runnable() }
-    }
+    ) = runTaskLater(delay) { runnable() }
 
     fun runTaskRepeat(
         delay: Duration,
         period: Duration = delay,
         runnable: () -> Unit
-    ): BukkitTask = runTaskRepeat(delay.toTicks(), period.toTicks(), runnable)
+    ): BukkitTask = BukkitTask(runTaskRepeat(delay.toTicks(), period.toTicks(), runnable))
 
     fun runTaskRepeat(
         period: Duration,
@@ -59,24 +52,22 @@ abstract class BukkitScheduler : Scheduler {
         delay: Duration,
         period: Duration,
         runnable: () -> Unit
-    ) {
-        runTaskRepeat(delay, period) { runnable() }
-    }
+    ) = runTaskRepeat(delay, period) { runnable() }
 
     abstract fun runTask(
         runnable: () -> Unit
-    ): BukkitTask
+    ): OriginalTask
 
     abstract fun runTaskLater(
         delayTicks: Long,
         runnable: () -> Unit
-    ): BukkitTask
+    ): OriginalTask
 
     abstract fun runTaskRepeat(
         delayTicks: Long,
         periodTicks: Long,
         runnable: () -> Unit
-    ): BukkitTask
+    ): OriginalTask
 
     fun runTaskRepeat(
         periodTicks: Long,

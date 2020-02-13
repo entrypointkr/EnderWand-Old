@@ -3,14 +3,14 @@ package kr.entree.enderwand.bukkit.scheduler
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
-
+import org.bukkit.scheduler.BukkitScheduler as OriginalScheduler
 
 /**
  * Created by JunHyung Lim on 2019-12-05
  */
 class BukkitSyncScheduler(
     val plugin: Plugin,
-    val scheduler: UglyScheduler = Bukkit.getScheduler()
+    val scheduler: OriginalScheduler = Bukkit.getScheduler()
 ) : BukkitScheduler() {
     override fun runTask(
         runnable: () -> Unit

@@ -13,7 +13,7 @@ fun dataOf(file: File, data: DynamicData) = StandardData(FileFactory(file), data
 
 fun StandardData.autoSave(
     syncScheduler: Scheduler,
-    asyncRunner: (() -> Unit) -> Unit,
+    asyncRunner: (() -> Unit) -> Any,
     period: Duration
 ) = syncScheduler.runRepeat(period, period) { saveAsync(asyncRunner) }
 
@@ -49,7 +49,7 @@ class StandardData(
     override fun save() = data.save(standardFactory.createWriter())
 
     inline fun saveAsync(
-        asyncRunner: (() -> Unit) -> Unit = {
+        asyncRunner: (() -> Unit) -> Any = {
             GlobalScope.launch { it() }
         }
     ) = StringWriter().run {
