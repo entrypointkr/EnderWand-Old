@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.view
 
+import kr.entree.enderwand.bukkit.event.player
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryEvent
 
@@ -8,6 +9,9 @@ import org.bukkit.event.inventory.InventoryEvent
  */
 fun <T : Dynamic> ViewContext<T>.update() =
     source.update(event.view.topInventory)
+
+fun <T : View> ViewContext<T>.close() =
+    event.player.closeInventory()
 
 interface ViewContext<T> {
     val event: InventoryEvent
