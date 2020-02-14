@@ -53,9 +53,6 @@ shadowJar {
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 task nostdlibJar(type: ShadowJar) {
-    project.tasks.withType(Jar) {
-        spigotPluginYaml.includeTasks.put(it, true)
-    }
     dependsOn shadowJar
     group = 'shadow'
     archiveClassifier.set('nostdlib')
