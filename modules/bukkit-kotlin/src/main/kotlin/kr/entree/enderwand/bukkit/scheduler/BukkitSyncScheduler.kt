@@ -21,8 +21,8 @@ class BukkitSyncScheduler(
     ): BukkitTask = scheduler.runTaskLater(plugin, runnable, delayTicks)
 
     override fun runTaskRepeat(
-        delayTicks: Long,
         periodTicks: Long,
+        delayTicks: Long,
         runnable: () -> Unit
     ): BukkitTask = scheduler.runTaskTimer(plugin, runnable, delayTicks, periodTicks)
 }

@@ -52,7 +52,7 @@ abstract class BukkitScheduler : Scheduler {
         period: Duration = Duration.ZERO,
         delay: Duration = Duration.ZERO,
         runnable: () -> Unit
-    ) = BukkitTask(runTaskRepeat(delay.toTicks(), period.toTicks(), runnable))
+    ) = BukkitTask(runTaskRepeat(period.toTicks(), delay.toTicks(), runnable))
 
     abstract fun runTask(
         runnable: () -> Unit
@@ -64,8 +64,8 @@ abstract class BukkitScheduler : Scheduler {
     ): OriginalTask
 
     abstract fun runTaskRepeat(
-        delayTicks: Long,
         periodTicks: Long,
+        delayTicks: Long,
         runnable: () -> Unit
     ): OriginalTask
 

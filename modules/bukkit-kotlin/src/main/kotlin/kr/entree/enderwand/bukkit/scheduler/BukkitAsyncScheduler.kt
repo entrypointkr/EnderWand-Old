@@ -21,8 +21,8 @@ class BukkitAsyncScheduler(
     ) = scheduler.runTaskLaterAsynchronously(plugin, runnable, delayTicks)
 
     override fun runTaskRepeat(
-        delayTicks: Long,
         periodTicks: Long,
+        delayTicks: Long,
         runnable: () -> Unit
     ) = scheduler.runTaskTimerAsynchronously(plugin, runnable, delayTicks, periodTicks)
 }
