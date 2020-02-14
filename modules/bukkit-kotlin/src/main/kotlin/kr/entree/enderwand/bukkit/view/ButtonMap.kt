@@ -29,6 +29,8 @@ interface ButtonMap<T> : MutableMap<Int, Button<T>> {
             i slotOf button
         }
     }
+
+    fun fill(item: ItemStack) = fill(button { item })
 }
 
 class SimpleButtonMap<T>(

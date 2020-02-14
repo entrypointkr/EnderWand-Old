@@ -4,6 +4,7 @@ import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.inventory
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 
@@ -21,12 +22,14 @@ class Window(
     val row: Int,
     val buttons: MutableMap<Int, Button<Window>>,
     val configure: Window.() -> Unit
-) : DynamicView, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
+) : DynamicView<Window>, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
     override val slots get() = row * 9
+    override var closeHandler: (InventoryCloseEvent) -> Unit = {}
+    override val instance get() = this
 
     override fun create() = inventory(title, row) { update(this) }
 
-    override fun onEvent(e: InventoryEvent) {
+    override fun handle(e: InventoryEvent) {
         e.cancelViolationClick()
         if (e is InventoryClickEvent && e.isNotDoubleClick) {
             buttons[e.rawSlot]?.invokeLater(e, this)

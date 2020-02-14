@@ -10,6 +10,7 @@ import kr.entree.enderwand.bukkit.item.meta
 import kr.entree.enderwand.bukkit.item.setName
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -61,11 +62,13 @@ class Paginator(
     var prevPageButtonSlot: Int,
     var nextPageButtonSlot: Int,
     val extraButtons: ButtonMap<Paginator>
-) : View, ViewFlexible {
+) : DynamicView<Paginator> {
     var page: Int = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
     val isPageableToPrev get() = page > 1
     val isPageableToNext get() = page < maxPage
+    override var closeHandler: (InventoryCloseEvent) -> Unit = {}
+    override val instance get() = this
 
     override fun create() = inventory(title, row) { update(this) }
 
@@ -85,7 +88,7 @@ class Paginator(
         }
     }
 
-    override fun onEvent(e: InventoryEvent) {
+    override fun handle(e: InventoryEvent) {
         e.cancelViolationClick()
         if (e is InventoryClickEvent && e.isNotDoubleClick) {
             val slot = slots.indexOf(e.rawSlot)

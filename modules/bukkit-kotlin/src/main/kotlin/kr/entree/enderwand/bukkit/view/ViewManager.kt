@@ -27,7 +27,7 @@ class ViewManager : Listener {
             handlerMap[player.uniqueId] = view
         }
 
-    fun notify(e: InventoryEvent) = handlerMap[e.view.player.uniqueId]?.onEvent(e)
+    fun notify(e: InventoryEvent) = handlerMap[e.view.player.uniqueId]?.handle(e)
 
     @EventHandler
     fun onClick(e: InventoryClickEvent) = notify(e)
