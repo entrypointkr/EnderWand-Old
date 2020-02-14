@@ -49,7 +49,7 @@ inline fun paginator(
     (0 until ((row - 1) * 9)).toList(),
     slot(3, row - 1),
     slot(5, row - 1),
-    mutableMapOf()
+    buttonMapOf(mutableMapOf())
 ).apply(configure)
 
 class Paginator(
@@ -60,7 +60,7 @@ class Paginator(
     var slots: List<Int>,
     var prevPageButtonSlot: Int,
     var nextPageButtonSlot: Int,
-    val extraButtons: MutableMap<Int, Button<Paginator>>
+    val extraButtons: ButtonMap<Paginator>
 ) : View, ViewFlexible {
     var page: Int = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
@@ -109,8 +109,7 @@ class Paginator(
 
     fun button(item: () -> ItemStack) = Button<Paginator>(item)
 
-    inline fun extra(builder: ButtonMap<Paginator>.() -> Unit) =
-        ButtonMap.simple(extraButtons).apply(builder)
+    inline fun extra(builder: ButtonMap<Paginator>.() -> Unit) = extraButtons.apply(builder)
 
     operator fun Button<Paginator>.unaryPlus() = buttons.add(this)
 
