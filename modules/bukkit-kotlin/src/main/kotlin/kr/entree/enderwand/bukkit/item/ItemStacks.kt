@@ -12,7 +12,7 @@ import kotlin.contracts.contract
  */
 fun Material.toItem(amount: Int = 1) = ItemStack(this, amount)
 
-inline fun item(material: Material, configure: ItemStack.() -> Unit = {}) = material.toItem().apply(configure)
+inline fun item(material: Material = Material.AIR, configure: ItemStack.() -> Unit = {}) = material.toItem().apply(configure)
 
 inline fun item(item: ItemStack, configure: ItemStack.() -> Unit = {}) = ItemStack(item).apply(configure)
 
