@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryEvent
 fun <T : Dynamic> ViewContext<T>.update() =
     source.update(event.view.topInventory)
 
-fun <T : View> ViewContext<T>.close() =
+fun <T> ViewContext<T>.close() =
     event.player.closeInventory()
 
 interface ViewContext<T> {
