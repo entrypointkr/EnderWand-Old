@@ -2,11 +2,13 @@ package kr.entree.enderwand.bukkit
 
 import com.google.gson.JsonParser
 import kr.entree.enderwand.bukkit.command.CommandManager
+import kr.entree.enderwand.bukkit.coroutine.TickNotifier
 import kr.entree.enderwand.bukkit.internal.commandMap
 import kr.entree.enderwand.bukkit.lang.LanguageManager
 import kr.entree.enderwand.bukkit.plugin.registerListeners
 import kr.entree.enderwand.bukkit.plugin.toPlugin
 import kr.entree.enderwand.bukkit.reactor.EventReactor
+import kr.entree.enderwand.bukkit.scheduler.scheduler
 import kr.entree.enderwand.bukkit.view.ViewManager
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.BufferedReader
@@ -24,11 +26,26 @@ class EnderWand : JavaPlugin() {
     val viewManager = ViewManager()
     val languageManager = LanguageManager()
     val eventReactor = EventReactor()
+    val tickNotifier = TickNotifier()
 
     override fun onEnable() {
-        runCatching { languageManager.loadFromResource(classLoader) }
-            .onFailure { logger.warning("Failed to loading languages.") }
-        registerListeners(viewManager, eventReactor)
+        initLanguages()
+        initListeners()
+        initTasks()
+    }
+
+    private fun initLanguages() {
+        runCatching {
+            languageManager.loadFromResource(classLoader)
+        }.onFailure {
+            logger.warning("Failed to loading languages.")
+        }
+    }
+
+    private fun initListeners() = registerListeners(viewManager, eventReactor)
+
+    private fun initTasks() {
+        scheduler.runRepeat { tickNotifier() }
     }
 }
 

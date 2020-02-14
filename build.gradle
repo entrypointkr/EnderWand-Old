@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61'
     }
 }
 
@@ -18,11 +18,13 @@ subprojects {
     def kotlin = name.endsWith('-kotlin')
     if (kotlin) {
         apply plugin: 'org.jetbrains.kotlin.jvm'
+        apply plugin: 'org.jetbrains.kotlin.kapt'
     } else {
         apply plugin: 'java'
     }
 
     repositories {
+        mavenCentral()
         jcenter()
     }
 

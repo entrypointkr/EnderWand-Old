@@ -30,32 +30,29 @@ abstract class BukkitScheduler : Scheduler {
 
     override fun isPrimaryThread() = Bukkit.isPrimaryThread()
 
-    fun runTaskLater(
-        delay: Duration,
-        runnable: () -> Unit
-    ) = BukkitTask(runTaskLater(delay.toTicks(), runnable))
-
     override fun runLater(
         delay: Duration,
         runnable: () -> Unit
     ) = runTaskLater(delay) { runnable() }
 
-    fun runTaskRepeat(
-        delay: Duration,
-        period: Duration = delay,
-        runnable: () -> Unit
-    ): BukkitTask = BukkitTask(runTaskRepeat(delay.toTicks(), period.toTicks(), runnable))
-
-    fun runTaskRepeat(
-        period: Duration,
-        runnable: () -> Unit
-    ) = runTaskRepeat(period, period, runnable)
-
     override fun runRepeat(
-        delay: Duration,
         period: Duration,
+        delay: Duration,
         runnable: () -> Unit
-    ) = runTaskRepeat(delay, period) { runnable() }
+    ) = runTaskRepeat(period, delay) { runnable() }
+
+    /////////////////////
+
+    fun runTaskLater(
+        delay: Duration = Duration.ZERO,
+        runnable: () -> Unit
+    ) = BukkitTask(runTaskLater(delay.toTicks(), runnable))
+
+    fun runTaskRepeat(
+        period: Duration = Duration.ZERO,
+        delay: Duration = Duration.ZERO,
+        runnable: () -> Unit
+    ) = BukkitTask(runTaskRepeat(delay.toTicks(), period.toTicks(), runnable))
 
     abstract fun runTask(
         runnable: () -> Unit
