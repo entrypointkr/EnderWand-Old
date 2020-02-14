@@ -26,6 +26,4 @@ class SchedulerDispatcher(private val scheduler: Scheduler) : CoroutineDispatche
 
     override fun invokeOnTimeout(timeMillis: Long, block: Runnable) =
         DisposableTask(scheduler.runLater(timeMillis.milliseconds, block::run))
-
-    override fun isDispatchNeeded(context: CoroutineContext) = !scheduler.isPrimaryThread()
 }
