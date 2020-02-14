@@ -72,7 +72,8 @@ inline fun Inventory.takeItem(count: Int, selector: (ItemStack) -> Boolean): Job
         val content = getItem(index)?.takeIf(selector) ?: continue
         val qty = content.amount
         if (qty > fails) {
-            operations += { content.amount = qty - fails }
+            val afterAmount = qty - fails
+            operations += { content.amount = afterAmount }
             fails = 0
             break
         } else {
