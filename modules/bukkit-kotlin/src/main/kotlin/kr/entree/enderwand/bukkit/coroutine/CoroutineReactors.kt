@@ -39,6 +39,6 @@ suspend fun Player.awaitInteract(): Block {
 
 suspend fun Player.awaitInteractEntity() = awaitReact(onInteractEntity) { it.rightClicked }
 
-suspend fun Player.onMove() = awaitReact(onMove) { it.from to it.to }
+suspend fun Player.awaitMove() = awaitReact(onMove) { it.from to it.to }
 
-suspend fun Player.onResourcePack() = awaitReact(onResourcePack) { it.status }
+suspend fun Player.awaitResourcePack() = awaitReact(onResourcePack) { it.status }
