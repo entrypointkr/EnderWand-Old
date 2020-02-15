@@ -14,11 +14,11 @@ fun Plugin.file(child: String): File {
     return File(dataFolder, child)
 }
 
-fun String.toPlugin() = Bukkit.getPluginManager().getPlugin(this)
+fun pluginOf(name: String) = Bukkit.getPluginManager().getPlugin(name)
 
-fun <T : JavaPlugin> Class<T>.toPlugin() = JavaPlugin.getPlugin(this)
+fun <T : JavaPlugin> pluginOf(type: KClass<T>) = JavaPlugin.getPlugin(type.java)
 
-fun <T : JavaPlugin> KClass<T>.toPlugin() = JavaPlugin.getPlugin(java)
+inline fun <reified T : JavaPlugin> plugin() = pluginOf(T::class)
 
 fun Plugin.registerListeners(vararg listeners: Listener) {
     listeners.forEach { Bukkit.getPluginManager().registerEvents(it, this) }

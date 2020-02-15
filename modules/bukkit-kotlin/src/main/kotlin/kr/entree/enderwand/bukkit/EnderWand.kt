@@ -4,8 +4,8 @@ import com.google.gson.JsonParser
 import kr.entree.enderwand.bukkit.command.CommandManager
 import kr.entree.enderwand.bukkit.internal.commandMap
 import kr.entree.enderwand.bukkit.lang.LanguageManager
+import kr.entree.enderwand.bukkit.plugin.plugin
 import kr.entree.enderwand.bukkit.plugin.registerListeners
-import kr.entree.enderwand.bukkit.plugin.toPlugin
 import kr.entree.enderwand.bukkit.reactor.EventReactor
 import kr.entree.enderwand.bukkit.view.ViewManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -17,7 +17,7 @@ import java.util.zip.ZipFile
 /**
  * Created by JunHyung Lim on 2019-12-03
  */
-val enderWand by lazy { EnderWand::class.toPlugin() }
+val enderWand get() = plugin<EnderWand>()
 
 class EnderWand : JavaPlugin() {
     val commandManager = CommandManager(commandMap)
