@@ -12,7 +12,8 @@ import kotlin.contracts.contract
  */
 fun Material.toItem(amount: Int = 1) = ItemStack(this, amount)
 
-inline fun item(material: Material = Material.AIR, configure: ItemStack.() -> Unit = {}) = material.toItem().apply(configure)
+inline fun item(material: Material = Material.AIR, configure: ItemStack.() -> Unit = {}) =
+    material.toItem().apply(configure)
 
 inline fun item(item: ItemStack, configure: ItemStack.() -> Unit = {}) = ItemStack(item).apply(configure)
 
@@ -31,6 +32,8 @@ fun ItemStack?.isNotAir(): Boolean {
     }
     return !isAir()
 }
+
+inline operator fun ItemStack.invoke(configure: ItemStack.() -> Unit) = apply(configure)
 
 inline fun headItem(player: OfflinePlayer?, configure: SkullMeta.() -> Unit) =
     item(Material.PLAYER_HEAD) {
