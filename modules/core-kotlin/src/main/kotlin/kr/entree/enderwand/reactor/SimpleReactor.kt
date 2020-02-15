@@ -1,23 +1,34 @@
 package kr.entree.enderwand.reactor
 
 /**
- * Created by JunHyung Lim on 2019-12-21
+ * Created by JunHyung Lim on 2020-02-15
  */
 class SimpleReactor<T> : Reactor<T> {
-    private val actors = mutableSetOf<Actor<T>>()
+    var actor: Actor<T>? = null
 
-    override fun subscribe(actor: Actor<T>) = actors.add(actor)
+    fun invokeCancelledHandler() {
+        val ctx = this.actor as? ReactorContext
+        ctx?.onCancelledHandler?.invoke()
+    }
 
-    override fun remove(actor: Actor<T>) = actors.remove(actor)
+    override fun subscribe(actor: Actor<T>): Boolean {
+        invokeCancelledHandler()
+        this.actor = actor
+        return true
+    }
+
+    override fun remove(actor: Actor<T>): Boolean {
+        invokeCancelledHandler()
+        this.actor = null
+        return true
+    }
 
     override fun notify(value: T) {
-        val iterator = actors.iterator()
-        while (iterator.hasNext()) {
-            val actor = iterator.next()
-            val context = ReactorContext(value)
-            actor(context)
-            if (context.isConsumed) {
-                iterator.remove()
+        val actor = this.actor ?: return
+        ReactorResult(value, actor.getContextOrCreate()).apply {
+            actor(this)
+            if (isCancelled) {
+                onCancelledHandler()
             }
         }
     }

@@ -10,6 +10,7 @@ import org.bukkit.entity.HumanEntity
 val HumanEntity.onInteract get() = Registry(enderWand.eventReactor.interact, uniqueId)
 val HumanEntity.onMove get() = Registry(enderWand.eventReactor.move, uniqueId)
 val HumanEntity.onInteractAny get() = Registry(enderWand.eventReactor.interactAny, uniqueId)
+val HumanEntity.onInteractEntity get() = Registry(enderWand.eventReactor.interactEntity, uniqueId)
 val HumanEntity.onChat get() = Registry(enderWand.eventReactor.chat, uniqueId)
 val HumanEntity.onChatAsync get() = Registry(enderWand.eventReactor.chatAsync, uniqueId)
 val HumanEntity.onResourcePack get() = Registry(enderWand.eventReactor.resourcePack, uniqueId)

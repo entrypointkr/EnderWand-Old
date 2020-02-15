@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.message
 
+import kr.entree.enderwand.bukkit.sender.tell
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -12,4 +13,4 @@ fun String.colorize(altColorChar: Char = '&') =
 
 fun String.broadcast() = Bukkit.broadcastMessage(toString())
 
-fun CharSequence.sendTo(sender: CommandSender) = sender.sendMessage(toString())
+fun CharSequence.sendTo(sender: CommandSender) = sender.tell(toString())

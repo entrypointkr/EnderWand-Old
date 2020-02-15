@@ -3,7 +3,18 @@ package kr.entree.enderwand.reactor
 /**
  * Created by JunHyung Lim on 2019-12-22
  */
-typealias Actor<V> = (ReactorContext<V>) -> Unit
+fun <T> Actor<T>.getContextOrCreate() = this as? ReactorContext ?: SimpleReactorContext()
+
+interface Actor<T> {
+    operator fun invoke(ctx: ReactorResult<T>)
+}
+
+class FunctionalActor<T>(
+    val function: ReactorResult<T>.() -> Unit,
+    val context: ReactorContext
+) : Actor<T>, ReactorContext by context {
+    override fun invoke(ctx: ReactorResult<T>) = function(ctx)
+}
 
 interface Reactor<T> {
     fun subscribe(actor: Actor<T>): Boolean
