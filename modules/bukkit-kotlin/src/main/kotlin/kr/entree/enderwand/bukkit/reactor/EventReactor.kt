@@ -13,13 +13,13 @@ import org.bukkit.event.player.*
  * Created by JunHyung Lim on 2019-12-21
  */
 class EventReactor : Listener {
-    val interact = playerReactor<PlayerInteractEvent>()
-    val interactEntity = playerReactor<PlayerInteractEntityEvent>()
-    val interactAny = playerReactor<PlayerEvent>()
-    val move = playerReactor<PlayerMoveEvent>()
-    val chat = playerReactor<AsyncPlayerChatEvent>()
-    val chatAsync = playerReactor<AsyncPlayerChatEvent>()
-    val resourcePack = playerReactor<PlayerResourcePackStatusEvent>()
+    val interact = eventPlayerReactor<PlayerInteractEvent>()
+    val interactEntity = eventPlayerReactor<PlayerInteractEntityEvent>()
+    val interactAny = eventPlayerReactor<PlayerEvent>()
+    val move = eventPlayerReactor<PlayerMoveEvent>()
+    val chat = eventPlayerReactor<AsyncPlayerChatEvent>()
+    val chatAsync = eventPlayerReactor<AsyncPlayerChatEvent>()
+    val resourcePack = eventPlayerReactor<PlayerResourcePackStatusEvent>()
     val playerReactors = listOf(interact, interactEntity, interactAny, move, chat, chatAsync, resourcePack)
 
     @EventHandler

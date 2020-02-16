@@ -6,30 +6,31 @@ package kr.entree.enderwand.reactor
 class SimpleReactor<T> : Reactor<T> {
     var actor: Actor<T>? = null
 
-    fun invokeCancelledHandler() {
-        val ctx = this.actor as? ReactorContext
-        ctx?.onCancelledHandler?.invoke()
-    }
-
     override fun subscribe(actor: Actor<T>): Boolean {
-        invokeCancelledHandler()
+        dispose()
         this.actor = actor
         return true
     }
 
     override fun remove(actor: Actor<T>): Boolean {
-        invokeCancelledHandler()
+        dispose()
         this.actor = null
         return true
     }
 
     override fun notify(value: T) {
         val actor = this.actor ?: return
-        ReactorResult(value, actor.getContextOrCreate()).apply {
+        val context = DelegateReactorContext(actor.context, this)
+        ReactorResult(value, context).apply {
             actor(this)
             if (isCancelled) {
-                onCancelledHandler()
+                dispose()
             }
         }
+    }
+
+    override fun dispose() {
+        (actor as? ReactorContext)?.dispose()
+        actor = null
     }
 }

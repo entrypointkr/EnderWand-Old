@@ -3,7 +3,7 @@ package kr.entree.enderwand.reactor
 /**
  * Created by JunHyung Lim on 2020-01-06
  */
-interface MapReactor<K, V> {
+interface MapReactor<K, V> : Disposable {
     fun get(key: K): Reactor<V>
 
     fun subscribe(key: K, actor: Actor<V>): Boolean

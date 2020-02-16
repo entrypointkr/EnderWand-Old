@@ -4,7 +4,9 @@ package kr.entree.enderwand.reactor
  * Created by JunHyung Lim on 2020-01-07
  */
 fun <K, V> simpleReactor(identifier: (V) -> K?) =
-    FunctionalMapReactor({ SimpleReactor() }, identifier)
+    FunctionalMapReactor(factory = {
+        SimpleReactor()
+    }, identifier = identifier)
 
 class FunctionalMapReactor<K, V>(
     val factory: () -> Reactor<V>,
@@ -16,12 +18,19 @@ class FunctionalMapReactor<K, V>(
 
     override fun subscribe(key: K, actor: Actor<V>) = get(key).subscribe(actor)
 
-    override fun remove(key: K) = map.remove(key)
+    override fun remove(key: K) = map.remove(key)?.apply { dispose() }
 
     override fun remove(key: K, actor: Actor<V>) = get(key).remove(actor)
 
     override fun notify(value: V) {
         val key = identifier(value) ?: return
         map[key]?.notify(value)
+    }
+
+    override fun dispose() {
+        map.forEach { (_, reactor) ->
+            reactor.dispose()
+        }
+        map.clear()
     }
 }

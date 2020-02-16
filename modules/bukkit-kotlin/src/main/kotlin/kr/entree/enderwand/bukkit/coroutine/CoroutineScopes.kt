@@ -23,8 +23,12 @@ class PlayerCoroutineScope(
     override val coroutineContext get() = delegate.coroutineContext
 }
 
-fun Player.onAction(plugin: Plugin = enderWand, block: suspend PlayerCoroutineScope.() -> Unit) {
-    plugin.scope.launch(Dispatchers.Bukkit) {
+fun Player.onAction(
+    dispatcher: BukkitDispatcher = Dispatchers.Bukkit,
+    plugin: Plugin = enderWand,
+    block: suspend PlayerCoroutineScope.() -> Unit
+) {
+    plugin.scope.launch(dispatcher) {
         block(PlayerCoroutineScope(this, this@onAction))
     }
 }
