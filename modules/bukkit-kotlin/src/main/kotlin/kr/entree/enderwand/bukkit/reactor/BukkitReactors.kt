@@ -11,8 +11,8 @@ import java.util.*
 /**
  * Created by JunHyung Lim on 2020-01-08
  */
-fun <T : Event> eventEntityReactor() =
-    eventPlayerReactor<T>().apply {
+fun <T : Event> entityEventReactor() =
+    playerEventReactor<T>().apply {
         FunctionalMapReactor(factory, {
             when (it) {
                 is EntityEvent -> {
@@ -23,7 +23,7 @@ fun <T : Event> eventEntityReactor() =
         })
     }
 
-fun <T : Event> eventPlayerReactor() =
+fun <T : Event> playerEventReactor() =
     simpleReactor<UUID, T> {
         it.findPlayer()?.uniqueId
     }

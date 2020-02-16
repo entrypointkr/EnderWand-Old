@@ -3,8 +3,10 @@
 package kr.entree.enderwand.bukkit.coroutine
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kr.entree.enderwand.bukkit.enderWand
+import kr.entree.enderwand.bukkit.event.isMainHand
 import kr.entree.enderwand.bukkit.reactor.*
 import kr.entree.enderwand.reactor.Registry
 import kr.entree.enderwand.reactor.SimpleReactorContext
@@ -21,29 +23,32 @@ import java.util.logging.Level
 suspend fun <T, R> awaitReact(
     registry: Registry<UUID, T>,
     transform: (T) -> R
-) = suspendCancellableCoroutine<R> { continuation ->
-    val context = SimpleReactorContext().apply {
-        continuation.invokeOnCancellation {
-            cancel()
-        }
-        onCancelledHandler = {
-            continuation.cancel()
-        }
-    }
-    registry(context) {
-        if (continuation.isActive) {
-            continuation.apply {
-                Dispatchers.Bukkit.resumeUndispatched(transform(result))
+): R {
+    delay(1)
+    return suspendCancellableCoroutine { continuation ->
+        val context = SimpleReactorContext().apply {
+            continuation.invokeOnCancellation {
+                cancel()
             }
-            cancel()
-        } else {
-            val message = StringWriter()
-            RuntimeException().printStackTrace(PrintWriter(message))
-            enderWand.logger.apply {
-                log(Level.WARNING, "Something went wrong!")
-                log(Level.WARNING, message.toString())
-                dispose()
-                log(Level.WARNING, "Tried disposing actor")
+            onCancelledHandler = {
+                continuation.cancel()
+            }
+        }
+        registry(context) {
+            if (continuation.isActive) {
+                continuation.apply {
+                    Dispatchers.Bukkit.resumeUndispatched(transform(result))
+                }
+                cancel()
+            } else {
+                val message = StringWriter()
+                RuntimeException().printStackTrace(PrintWriter(message))
+                enderWand.logger.apply {
+                    log(Level.WARNING, "Something went wrong!")
+                    log(Level.WARNING, message.toString())
+                    dispose()
+                    log(Level.WARNING, "Tried to disposing actor")
+                }
             }
         }
     }
@@ -52,7 +57,13 @@ suspend fun <T, R> awaitReact(
 suspend fun Player.awaitChat() = awaitReact(onChat) { it.message }
 
 suspend fun Player.awaitInteract(): Block {
-    return awaitReact(onInteract) { it.clickedBlock } ?: awaitInteract()
+    return awaitReact(onInteract) { it }.run {
+        if (clickedBlock != null && isMainHand) {
+            clickedBlock!!
+        } else {
+            awaitInteract()
+        }
+    }
 }
 
 suspend fun Player.awaitInteractEntity() = awaitReact(onInteractEntity) { it.rightClicked }
