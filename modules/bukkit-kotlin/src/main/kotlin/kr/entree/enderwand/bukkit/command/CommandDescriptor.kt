@@ -18,7 +18,7 @@ fun commandDescriptorOf(configure: CommandDescriptor.() -> Unit): CommandDescrip
 class CommandDescriptor {
     var description: String = ""
     var usage: String = ""
-    var aliases: Set<String> = emptySet()
+    var aliases: Collection<String> = emptyList()
     var plugin: Plugin? = null
 
     fun create(
@@ -29,7 +29,7 @@ class CommandDescriptor {
         label,
         description,
         usage,
-        aliases.toList(),
+        aliases.distinct(),
         plugin ?: enderWand,
         executor,
         tabCompleter

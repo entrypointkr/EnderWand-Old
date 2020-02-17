@@ -12,7 +12,7 @@ inline fun <S : Sender> command(configure: CommandBuilder<S>.() -> Unit) =
     CommandBuilder<S>().apply(configure).build()
 
 class CommandBuilder<S : Sender> {
-    var aliases: Set<String> = mutableSetOf()
+    var aliases: List<String> = mutableListOf()
     var description: String = ""
     var permission: String = ""
     var arguments: MutableList<Argument<*>> = mutableListOf()
