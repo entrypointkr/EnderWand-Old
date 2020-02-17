@@ -36,8 +36,8 @@ class DelegateReactorContext(
 object EmptyReactorContext : ReactorContext {
     override var isCancelled: Boolean
         get() = true
-        set(value) {}
+        set(_) {}
     override var onCancelledHandler: () -> Unit
         get() = {}
-        set(value) {}
+        set(_) {}
 }
