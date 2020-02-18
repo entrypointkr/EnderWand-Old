@@ -172,13 +172,17 @@ fun Point<Int>.slots(end: Point<Int>): List<Int> {
 
 fun slot(x: Int, y: Int) = y * 9 + x
 
-fun slots(vararg patterns: String): List<Int> {
+private val PATTERNS =
+    ('1'..'9').union('a'..'z').union('A'..'Z')
+        .mapIndexed { index, char -> char to index }
+        .toMap()
+
+fun slotPatterns(vararg patterns: String): List<Int> {
     val ret = mutableListOf<Pair<Int, Int>>()
     for ((y, pattern) in patterns.withIndex()) {
         validate(pattern.length == 9, "Length must be 9")
         for ((x, char) in pattern.withIndex()) {
-            if (char !in '1'..'z') continue
-            val priority = char - '1'
+            val priority = PATTERNS[char] ?: continue
             ret += slot(x, y) to priority
         }
     }

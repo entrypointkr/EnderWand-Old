@@ -1,6 +1,6 @@
 package kr.entree.enderwand.bukkit
 
-import kr.entree.enderwand.bukkit.inventory.slots
+import kr.entree.enderwand.bukkit.inventory.slotPatterns
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -11,10 +11,14 @@ class SlotPatternTest {
     @Test
     fun `slots pattern`() {
         assertEquals(
-            (1 until 9 * 2 - 1).toList(),
-            slots(
+            (1 until 9 * 6 - 1).toList(),
+            slotPatterns(
                 "012345678",
-                "9abcdefg0"
+                "9abcdefgi",
+                "jklmnopqr",
+                "stuvwxyzA",
+                "BCDEFGHIJ",
+                "KLMNOPQR0"
             )
         )
     }
