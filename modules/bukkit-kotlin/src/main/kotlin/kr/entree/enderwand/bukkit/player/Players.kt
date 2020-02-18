@@ -35,7 +35,7 @@ fun BukkitSender.toPlayerOrThrow() = player ?: throw UnknownPlayerException(name
 
 val HumanEntity.handItem get() = inventory.itemInMainHand
 
-fun HumanEntity.handItemOrThrow() = handItem.takeIf { it.isNotAir() } ?: throw NoItemInMainHandException(inventory)
+fun HumanEntity.handItemNotAir() = handItem.takeIf { it.isNotAir() } ?: throw NoItemInMainHandException(inventory)
 
 fun CommandSender.execute(commandLine: String) = Bukkit.dispatchCommand(this, commandLine)
 
