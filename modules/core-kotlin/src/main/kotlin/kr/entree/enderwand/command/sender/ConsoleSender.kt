@@ -4,12 +4,12 @@ package kr.entree.enderwand.command.sender
  * Created by JunHyung Lim on 2019-12-18
  */
 class ConsoleSender : Sender {
-    override fun sendMessage(message: Any) {
+    override fun tell(message: Any) {
         println(message)
     }
 
-    override fun sendError(errorMessage: Any) {
-        sendMessage(errorMessage)
+    override fun tellError(errorMessage: Any) {
+        tell(errorMessage)
     }
 
     override fun hasPermission(node: String) = true

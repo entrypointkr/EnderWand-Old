@@ -20,7 +20,7 @@ class CommandTest {
         command<Sender> {
             executes {
                 result = args[0].toInt() + args[1].toInt()
-                sender.sendMessage(msg)
+                sender.tell(msg)
             }
         }.execute(createSender { msgReceived = it == msg }, listOf("2", "3").toReader())
         assertEquals(5, result)

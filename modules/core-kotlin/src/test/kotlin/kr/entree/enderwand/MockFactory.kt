@@ -10,7 +10,7 @@ import kr.entree.enderwand.command.sender.Sender
  * Created by JunHyung Lim on 2020-01-09
  */
 fun createSender(msgReceiver: (Any) -> Unit) = mock<Sender> {
-    on { sendMessage(any()) } doAnswer {
+    on { tell(any()) } doAnswer {
         msgReceiver(it.arguments[0])
     }
     on { hasPermission(any()) } doReturn true

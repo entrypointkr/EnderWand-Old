@@ -1,9 +1,7 @@
 package kr.entree.enderwand.bukkit.command
 
 import kr.entree.enderwand.bukkit.enderWand
-import kr.entree.enderwand.bukkit.exception.NotCraftingMaterialException
-import kr.entree.enderwand.bukkit.exception.UnknownMaterialException
-import kr.entree.enderwand.bukkit.exception.UnknownPlayerException
+import kr.entree.enderwand.bukkit.exception.*
 import kr.entree.enderwand.command.*
 import kr.entree.enderwand.string.unicodeBlock
 import java.io.PrintWriter
@@ -53,31 +51,33 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
         val sender = ctx.sender
         when (throwable) {
             is ExecutorException -> handleExecutor(throwable, ctx)
-            is UnknownPlayerException -> sender.sendError("존재하지 않는 플레이어입니다.")
+            is UnknownPlayerException -> sender.tellError("존재하지 않는 플레이어입니다.")
             is ArgumentParseException -> {
                 if (throwable.cause != null) {
                     handleError(throwable.cause!!, ctx)
                 } else {
-                    sender.sendError("잘못된 명령어 사용입니다.")
+                    sender.tellError("잘못된 명령어 사용입니다.")
                 }
             }
-            is UnknownMaterialException -> sender.sendError("알 수 없는 아이템/블럭입니다. ${throwable.query}")
-            is NotCraftingMaterialException -> sender.sendError("조합할 수 없는 아이템/블럭 입니다. ${throwable.material}")
-            is NoPermissionException -> sender.sendError("권한 ${throwable.permission} 이 없습니다.")
-            is NotNumberException -> sender.sendError("숫자가 아닙니다. ${throwable.value}")
-            is NotIntException -> sender.sendError("정수가 아닙니다. ${throwable.value}")
-            is NotDoubleException -> sender.sendError("소수가 아닙니다. ${throwable.value}")
-            is InvalidUsageException -> sender.sendError("잘못된 사용법입니다.")
-            is CommandException -> sender.sendError(throwable.errorMessage)
+            is UnknownMaterialException -> sender.tellError("알 수 없는 아이템/블럭입니다. ${throwable.query}")
+            is NotCraftingMaterialException -> sender.tellError("조합할 수 없는 아이템/블럭 입니다. ${throwable.material}")
+            is NoPermissionException -> sender.tellError("권한 ${throwable.permission} 이 없습니다.")
+            is NotNumberException -> sender.tellError("숫자가 아닙니다. ${throwable.value}")
+            is NotIntException -> sender.tellError("정수가 아닙니다. ${throwable.value}")
+            is NotDoubleException -> sender.tellError("소수가 아닙니다. ${throwable.value}")
+            is InvalidUsageException -> sender.tellError("잘못된 사용법입니다.")
+            is CommandException -> sender.tellError(throwable.errorMessage)
+            is NoItemInMainHandException -> sender.tellError("손에 아이템을 들어주세요!")
+            is Minecraft -> sender.tellError(throwable.toString())
             else -> {
                 if (sender.isOp()) {
                     StringWriter().apply {
                         throwable.printStackTrace(PrintWriter(this))
-                        sender.sendError(toString())
+                        sender.tellError(toString())
                         enderWand.logger.log(Level.WARNING, throwable) { "Error in command!" }
                     }
                 }
-                sender.sendError("에러가 발생했습니다. $throwable")
+                sender.tellError("에러가 발생했습니다. $throwable")
             }
         }
     }
@@ -92,7 +92,7 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
         }
         val labelUnicode = label.unicodeBlock
         if (executor is CommandMapped<*>) {
-            sender.sendError("명령어 도움말")
+            sender.tellError("명령어 도움말")
             executor.aliasesByCommand.filter {
                 val cmd = it.key
                 cmd !is CommandDetailed || sender.hasPermission(cmd.permission)
@@ -124,7 +124,7 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
                 if (player != null) {
                     sender.sendMessage(line)
                 } else {
-                    sender.sendMessage(line)
+                    sender.tell(line)
                 }
                 argument.setLength(prev)
             }
@@ -132,7 +132,7 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
             handleError(ex.cause, ctx)
             if (executor is CommandDetailed) {
                 argument.appendCommandInfo(executor)
-                sender.sendMessage(argument)
+                sender.tell(argument)
             }
         }
     }

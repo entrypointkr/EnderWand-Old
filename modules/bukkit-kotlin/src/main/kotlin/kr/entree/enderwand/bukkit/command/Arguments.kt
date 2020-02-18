@@ -2,7 +2,6 @@
 
 package kr.entree.enderwand.bukkit.command
 
-import kr.entree.enderwand.bukkit.enderWand
 import kr.entree.enderwand.bukkit.exception.NotCraftingMaterialException
 import kr.entree.enderwand.bukkit.exception.UnknownMaterialException
 import kr.entree.enderwand.bukkit.exception.UnknownPlayerException

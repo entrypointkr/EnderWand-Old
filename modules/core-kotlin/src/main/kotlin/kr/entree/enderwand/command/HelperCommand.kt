@@ -10,7 +10,7 @@ import kr.entree.enderwand.command.tabcompleter.TabCompleter
  */
 object DefaultCommandHelper : (CommandTrouble) -> Unit {
     fun handle(trouble: CommandTrouble) {
-        trouble.sender.sendMessage("Invalid command usage.")
+        trouble.sender.tell("Invalid command usage.")
     }
 
     override fun invoke(trouble: CommandTrouble) {

@@ -17,9 +17,9 @@ abstract class SimpleExecutor(
     private val handler: CommandTrouble.() -> Unit = {
         val ex = exception
         if (ex is CommandException) {
-            ctx.sender.sendMessage("&c${ex.errorMessage}")
+            ctx.sender.tell("&c${ex.errorMessage}")
         } else {
-            ctx.sender.sendMessage("오류가 발생했습니다. $exception")
+            ctx.sender.tell("오류가 발생했습니다. $exception")
             enderWand.logger.log(Level.WARNING, exception) {
                 "Uncaught Exception!"
             }
