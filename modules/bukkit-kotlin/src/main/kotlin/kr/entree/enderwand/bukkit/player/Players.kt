@@ -25,7 +25,7 @@ fun UUID.toPlayer() = Bukkit.getPlayer(this)
 
 fun UUID.toOfflinePlayer() = Bukkit.getOfflinePlayer(this)
 
-fun UUID.getPlayerName(defaultName: String = "???") = toOfflinePlayer().name ?: defaultName
+fun UUID.playerName(defaultName: String = "???") = toOfflinePlayer().name ?: defaultName
 
 fun CommandSender.toPlayer() = this as? Player
 

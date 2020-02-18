@@ -53,6 +53,8 @@ inline class EconomyHolder(val uuid: UUID) {
         EconomyResult(amount.toDouble() - it.balance)
     }
 
+    fun has(amount: Number) = get() >= amount.toDouble()
+
     fun get() = economy.getBalance(uuid.toOfflinePlayer())
 }
 

@@ -1,7 +1,6 @@
 package kr.entree.enderwand.bukkit.item
 
 import kr.entree.enderwand.bukkit.message.colorize
-import org.bukkit.ChatColor
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
@@ -21,10 +20,11 @@ inline fun <reified T : ItemMeta> ItemStack.meta(configure: T.() -> Unit) {
 
 fun ItemMeta.setName(name: String) = setDisplayName(name.colorize())
 
-fun ItemMeta.setLore(vararg lore: String) = setLore(lore.map { ChatColor.WHITE.toString() + it.colorize() })
+fun ItemMeta.setLore(vararg lore: String) = setLore(lore.map { it.colorize() })
 
-inline fun ItemMeta.lore(builder: MutableList<String>.() -> Unit) =
-    setLore(mutableListOf<String>().apply(builder).map { it.colorize() })
+inline fun ItemMeta.lore(configure: MutableList<String>.() -> Unit) {
+    lore = mutableListOf<String>().apply(configure).map { it.colorize() }
+}
 
 val ItemStack.displayName get() = itemMeta?.displayName ?: ""
 

@@ -10,12 +10,17 @@ import kotlin.contracts.contract
 /**
  * Created by JunHyung Lim on 2020-01-01
  */
+val EMPTY_ITEM by lazy { item(Material.AIR) }
+
 fun Material.toItem(amount: Int = 1) = ItemStack(this, amount)
 
-inline fun item(material: Material = Material.AIR, configure: ItemStack.() -> Unit = {}) =
+inline fun item(material: Material = Material.AIR, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
     material.toItem().apply(configure)
 
-inline fun item(item: ItemStack, configure: ItemStack.() -> Unit = {}) = ItemStack(item).apply(configure)
+inline fun item(item: ItemStack, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
+    ItemStack(item).apply(configure)
+
+fun emptyItem() = EMPTY_ITEM
 
 @UseExperimental(ExperimentalContracts::class)
 fun ItemStack?.isAir(): Boolean {
