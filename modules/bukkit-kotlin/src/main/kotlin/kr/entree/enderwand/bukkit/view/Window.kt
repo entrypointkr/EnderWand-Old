@@ -14,7 +14,7 @@ import org.bukkit.inventory.Inventory
 fun window(
     title: String,
     row: Int,
-    configure: Window.() -> Unit
+    configure: Window.() -> Unit = {}
 ) = Window(title, row, mutableMapOf(), configure)
 
 class Window(
