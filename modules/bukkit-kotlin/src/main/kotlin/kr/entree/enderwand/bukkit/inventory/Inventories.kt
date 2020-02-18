@@ -2,6 +2,7 @@ package kr.entree.enderwand.bukkit.inventory
 
 import kr.entree.enderwand.bukkit.item.isAir
 import kr.entree.enderwand.bukkit.item.item
+import kr.entree.enderwand.command.validate
 import kr.entree.enderwand.math.Point
 import org.bukkit.Bukkit
 import org.bukkit.entity.HumanEntity
@@ -162,3 +163,16 @@ fun Point<Int>.slots(end: Point<Int>): List<Int> {
 }
 
 fun slot(x: Int, y: Int) = y * 9 + x
+
+fun slots(vararg lines: String): List<Int> {
+    val ret = mutableListOf<Pair<Int, Int>>()
+    for ((y, line) in lines.withIndex()) {
+        validate(line.length == 9, "Length must be 9")
+        for ((x, char) in line.withIndex()) {
+            if (char !in '1'..'z') continue
+            val priority = char - '1'
+            ret += slot(x, y) to priority
+        }
+    }
+    return ret.sortedBy { it.second }.map { it.first }
+}
