@@ -42,7 +42,7 @@ class CommandTest {
         )
         val cmd = bukkitCommand {
             child("구매") {
-                aliases = setOf("buy")
+                aliases = listOf("buy")
                 description = "자신이 서 있는 청크를 구매합니다."
                 executes {
                     buy++
