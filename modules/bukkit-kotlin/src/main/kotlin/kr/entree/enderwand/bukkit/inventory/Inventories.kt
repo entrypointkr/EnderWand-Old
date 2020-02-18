@@ -93,8 +93,8 @@ fun Inventory.takeItem(count: Int, hasItemsByIndex: List<IndexedValue<Int>>): Jo
 
 inline fun Inventory.takeItem(
     count: Int,
-    selector: (ItemStack) -> Boolean,
-    hasItemsByIndex: List<IndexedValue<Int>>? = null
+    hasItemsByIndex: List<IndexedValue<Int>>? = null,
+    selector: (ItemStack) -> Boolean
 ) = takeItem(count, hasItemsByIndex ?: hasItems(selector))
 
 fun Inventory.takeItem(item: ItemStack, count: Int = item.amount, hasItemsByIndex: List<IndexedValue<Int>>? = null) =

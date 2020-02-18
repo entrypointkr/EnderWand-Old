@@ -32,11 +32,8 @@ inline fun paginator(
     title: String,
     row: Int = 6,
     configure: Paginator.() -> Unit = {}
-) = Paginator(
-    title,
-    mutableListOf(),
-    row,
-    { left ->
+): Paginator {
+    val pagingButtonFactory: Paginator.(Boolean) -> ItemStack = { left ->
         item(PAGINATOR_DEFAULT_BUTTONS.random()) {
             amount = page
             meta {
@@ -46,18 +43,26 @@ inline fun paginator(
                 )
             }
         }
-    },
-    (0 until ((row - 1) * 9)).toList(),
-    slot(3, row - 1),
-    slot(5, row - 1),
-    buttonMapOf(mutableMapOf())
-).apply(configure)
+    }
+    return Paginator(
+        title,
+        mutableListOf(),
+        row,
+        { pagingButtonFactory(true) },
+        { pagingButtonFactory(false) },
+        (0 until ((row - 1) * 9)).toList(),
+        slot(3, row - 1),
+        slot(5, row - 1),
+        buttonMapOf(mutableMapOf())
+    ).apply(configure)
+}
 
 class Paginator(
     val title: String,
     var buttons: MutableList<Button<Paginator>>,
     val row: Int = 6,
-    var pagingButton: Paginator.(left: Boolean) -> ItemStack,
+    var prevPagingButton: Paginator.() -> ItemStack,
+    var nextPagingButton: Paginator.() -> ItemStack,
     var slots: List<Int>,
     var prevPageButtonSlot: Int,
     var nextPageButtonSlot: Int,
@@ -80,9 +85,9 @@ class Paginator(
             setItem(slot, button.item())
         }
         if (isPageableToPrev)
-            setItem(prevPageButtonSlot, pagingButton(this@Paginator, true))
+            setItem(prevPageButtonSlot, prevPagingButton())
         if (isPageableToNext)
-            setItem(nextPageButtonSlot, pagingButton(this@Paginator, false))
+            setItem(nextPageButtonSlot, nextPagingButton())
         extraButtons.forEach { (slot, button) ->
             setItem(slot, button.item())
         }
