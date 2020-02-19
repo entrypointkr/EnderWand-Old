@@ -75,20 +75,18 @@ fun Inventory.takeAt(slot: Int, item: ItemStack, count: Int = item.amount): JobR
 fun Inventory.takeItem(count: Int, hasItemsByIndex: List<IndexedValue<Int>>): JobResult {
     if (count <= 0) JobResult.SUCCESS
     val hasCount = hasItemsByIndex.sumBy { it.value }
-    return JobResult(
-        if (hasCount >= count) {
-            var remain = count
-            for ((index, amount) in hasItemsByIndex) {
-                if (remain <= 0) break
-                val slotItem = getItem(index) ?: continue
-                takeAt(index, slotItem, amount.coerceAtMost(remain))
-                remain -= amount
-            }
-            0
-        } else {
-            count - hasCount
+    return if (hasCount >= count) {
+        var remain = count
+        for ((index, amount) in hasItemsByIndex) {
+            if (remain <= 0) break
+            val slotItem = getItem(index) ?: continue
+            takeAt(index, slotItem, amount.coerceAtMost(remain))
+            remain -= amount
         }
-    )
+        JobResult.SUCCESS
+    } else {
+        JobResult(count - hasCount)
+    }
 }
 
 inline fun Inventory.takeItem(
@@ -120,7 +118,12 @@ fun Inventory.giveItem(
     val spaces = spaceBySlot ?: hasSpaces(item)
     val totalSpace = spaces.sumBy { it.value }
     return if (totalSpace >= giveCount) {
-        spaces.forEach { (index, amount) -> addAt(index, item(item, amount)) }
+        var remain = giveCount
+        for ((slot, amount) in spaces) {
+            if (remain <= 0) break
+            addAt(slot, item(item, amount.coerceAtMost(remain)))
+            remain -= amount
+        }
         JobResult.SUCCESS
     } else {
         JobResult(totalSpace - giveCount)

@@ -11,6 +11,8 @@ class Button<T>(
     val item: () -> ItemStack,
     var click: ButtonContext<T>.() -> Unit = {}
 ) {
+    val metadata: MutableMap<String, Any> by lazy { mutableMapOf<String, Any>() }
+
     operator fun invoke(event: InventoryEvent, source: T) {
         click(ButtonContext(this, event, source))
     }
