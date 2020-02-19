@@ -15,7 +15,7 @@ class BukkitSender(
     val isPlayer get() = bukkitSender is Player
 
     override fun tell(message: Any) {
-        bukkitSender.sendMessage(message.toString())
+        bukkitSender.sendMessage(message.toString().colorize())
     }
 
     override fun tellError(errorMessage: Any) {

@@ -15,13 +15,12 @@ fun window(
     title: String,
     row: Int,
     configure: Window.() -> Unit = {}
-) = Window(title, row, mutableMapOf(), configure)
+) = Window(title, row, mutableMapOf()).apply(configure)
 
 class Window(
     val title: String,
     val row: Int,
-    val buttons: MutableMap<Int, Button<Window>>,
-    val configure: Window.() -> Unit
+    val buttons: MutableMap<Int, Button<Window>>
 ) : DynamicView<Window>, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
     override val slots get() = row * 9
     override var closeHandler: (InventoryCloseEvent) -> Unit = {}
@@ -37,8 +36,6 @@ class Window(
     }
 
     override fun update(inventory: Inventory) {
-        buttons.clear()
-        configure()
         for (i in 0 until inventory.size) {
             inventory.setItem(i, buttons[i]?.item?.invoke())
         }
