@@ -29,6 +29,23 @@ fun ButtonContext<Paginator>.remove() {
 }
 
 inline fun paginator(
+    refer: Paginator,
+    title: String = refer.title,
+    row: Int = refer.row,
+    configure: Paginator.() -> Unit
+): Paginator = Paginator(
+    title,
+    refer.buttons,
+    row,
+    refer.prevPagingButton,
+    refer.nextPagingButton,
+    refer.slots,
+    refer.prevPageButtonSlot,
+    refer.nextPageButtonSlot,
+    refer.extraButtons
+)
+
+inline fun paginator(
     title: String,
     row: Int = 6,
     configure: Paginator.() -> Unit = {}

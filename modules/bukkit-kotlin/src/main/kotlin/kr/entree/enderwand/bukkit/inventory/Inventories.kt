@@ -101,8 +101,8 @@ fun Inventory.takeItem(item: ItemStack, count: Int = item.amount, hasItemsByInde
     takeItem(count, hasItemsByIndex ?: hasItems { it.isSimilar(item) })
 
 inline fun Inventory.hasItems(selector: (ItemStack) -> Boolean) =
-    asIterable().filter { (_, item) -> selector(item) }
-        .map { (index, item) -> IndexedValue(index, item.amount) }
+    ItemsBySlot(asIterable().filter { (_, item) -> selector(item) }
+        .map { (index, item) -> IndexedValue(index, item.amount) })
 
 fun Inventory.hasItems(item: ItemStack) = hasItems { it.isSimilar(item) }
 
@@ -140,7 +140,7 @@ fun Inventory.giveItemOrDrop(item: ItemStack, giveCount: Int = item.amount): Job
 }
 
 fun Inventory.hasSpaces(item: ItemStack) =
-    asIterable().map { (index, element) ->
+    ItemsBySlot(asIterable().map { (index, element) ->
         IndexedValue(
             index, when {
                 element.isAir() -> item.maxStackSize
@@ -148,7 +148,7 @@ fun Inventory.hasSpaces(item: ItemStack) =
                 else -> 0
             }
         )
-    }.filter { it.value > 0 }
+    }.filter { it.value > 0 })
 
 fun Inventory.open(player: HumanEntity) = player.openInventory(this)
 
@@ -208,4 +208,8 @@ inline class JobResult(val remain: Int) {
     }
 }
 
-fun List<IndexedValue<Int>>.sum() = sumBy { it.value }
+class ItemsBySlot(val hasAmountBySlot: List<IndexedValue<Int>>) : List<IndexedValue<Int>> by hasAmountBySlot {
+    fun sum() = sumBy { it.value }
+
+    fun hasSpace(amount: Int) = sum() >= amount
+}

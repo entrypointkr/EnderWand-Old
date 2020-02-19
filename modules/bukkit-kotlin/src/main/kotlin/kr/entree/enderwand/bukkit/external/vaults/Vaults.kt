@@ -36,24 +36,24 @@ inline class EconomyResult(val remain: Double) {
 
 inline class EconomyHolder(val uuid: UUID) {
     operator fun plusAssign(amount: Number) {
-        give(amount)
+        giveMoney(amount)
     }
 
-    fun give(amount: Number) = economy.depositPlayer(
+    fun giveMoney(amount: Number) = economy.depositPlayer(
         uuid.toOfflinePlayer(),
         amount.toDouble()
     ).let {
         EconomyResult(amount.toDouble() - it.balance)
     }
 
-    fun take(amount: Number) = economy.withdrawPlayer(
+    fun takeMoney(amount: Number) = economy.withdrawPlayer(
         uuid.toOfflinePlayer(),
         amount.toDouble()
     ).let {
         EconomyResult(amount.toDouble() - it.balance)
     }
 
-    fun has(amount: Number) = get() >= amount.toDouble()
+    fun hasMoney(amount: Number) = get() >= amount.toDouble()
 
     fun get() = economy.getBalance(uuid.toOfflinePlayer())
 }

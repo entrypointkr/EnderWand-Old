@@ -42,7 +42,7 @@ inline operator fun ItemStack.invoke(configure: ItemStack.() -> Unit) = apply(co
 
 inline fun headItem(player: OfflinePlayer?, configure: SkullMeta.() -> Unit) =
     item(Material.PLAYER_HEAD) {
-        meta<SkullMeta> {
+        metaOf<SkullMeta> {
             owningPlayer = player
             configure(this)
         }

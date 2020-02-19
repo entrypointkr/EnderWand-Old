@@ -36,18 +36,3 @@ fun BukkitSender.toPlayerOrThrow() = player ?: throw UnknownPlayerException(name
 val HumanEntity.itemOnHand get() = inventory.itemInMainHand
 
 fun HumanEntity.itemOnHandNotAir() = itemOnHand.takeIf { it.isNotAir() } ?: throw NoItemInMainHandException(inventory)
-
-fun CommandSender.execute(commandLine: String) = Bukkit.dispatchCommand(this, commandLine)
-
-inline fun <T : CommandSender> T.sudo(block: T.() -> Unit) {
-    val wasUser = !isOp
-    if (wasUser) {
-        isOp = true
-    }
-    block()
-    if (wasUser) {
-        isOp = false
-    }
-}
-
-fun CommandSender.executeAsOp(commandLine: String) = sudo { execute(commandLine) }

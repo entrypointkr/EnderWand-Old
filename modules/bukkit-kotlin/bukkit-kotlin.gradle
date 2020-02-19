@@ -24,6 +24,7 @@ spigot {
 repositories {
     jitpack()
     protocolLib()
+    mavenLocal() // For protocollib
 }
 
 dependencies {

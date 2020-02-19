@@ -7,15 +7,14 @@ import org.bukkit.inventory.meta.ItemMeta
 /**
  * Created by JunHyung Lim on 2020-01-25
  */
-inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) = meta<ItemMeta>(configure)
+inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) = metaOf<ItemMeta>(configure)
 
-@JvmName("metaTyped")
-inline fun <reified T : ItemMeta> ItemStack.meta(configure: T.() -> Unit) {
+inline fun <reified T : ItemMeta> ItemStack.metaOf(configure: T.() -> Unit) {
     val meta = itemMeta
     if (meta is T) {
         meta.configure()
         itemMeta = meta
-    }
+    } else throw IllegalStateException("$type meta of item isn't ${T::class.java.simpleName}")
 }
 
 fun ItemMeta.setName(name: String) = setDisplayName(name.colorize())

@@ -11,7 +11,7 @@ import org.bukkit.plugin.EventExecutor
  */
 class FunctionalEventExecutor(
     private val ignoreCancelled: Boolean,
-    private val function: (Listener, Event) -> Unit
+    private val function: FunctionalEventExecutor.(Listener, Event) -> Unit
 ) : EventExecutor, Listener {
     override fun execute(listener: Listener, event: Event) {
         if (event is Cancellable && event.isCancelled && ignoreCancelled) {

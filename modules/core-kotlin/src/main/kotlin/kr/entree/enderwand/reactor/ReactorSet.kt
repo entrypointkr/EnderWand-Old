@@ -10,7 +10,7 @@ class ReactorSet<T> : Reactor<T> {
 
     override fun remove(actor: Actor<T>): Boolean {
         if (actors.remove(actor)) {
-            actor.context.onCancelledHandler()
+            actor.context.dispose()
             return true
         }
         return false
@@ -20,11 +20,12 @@ class ReactorSet<T> : Reactor<T> {
         val iterator = actors.iterator()
         while (iterator.hasNext()) {
             val actor = iterator.next()
-            ReactorResult(value, actor.context).apply {
+            val context = DelegateReactorContext(actor.context, this)
+            ReactorResult(value, context).apply {
                 actor(this)
                 if (isCancelled) {
                     iterator.remove()
-                    onCancelledHandler()
+                    dispose()
                 }
             }
         }

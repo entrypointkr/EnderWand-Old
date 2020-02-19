@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.event
 
+import kr.entree.enderwand.bukkit.scheduler.scheduler
 import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
@@ -31,11 +32,15 @@ fun Event.findPlayer() =
 inline fun <reified T : Event> Plugin.on(
     priority: EventPriority = EventPriority.NORMAL,
     ignoreCancelled: Boolean = false,
-    crossinline receiver: T.() -> Unit
+    crossinline receiver: T.(FunctionalEventExecutor) -> Unit
 ) =
     FunctionalEventExecutor(ignoreCancelled) { _, event ->
         if (event is T) {
-            receiver(event)
+            if (priority == EventPriority.MONITOR) {
+                scheduler.run { receiver(event, this) }
+            } else {
+                receiver(event, this)
+            }
         }
     }.also { executor ->
         Bukkit.getPluginManager()
