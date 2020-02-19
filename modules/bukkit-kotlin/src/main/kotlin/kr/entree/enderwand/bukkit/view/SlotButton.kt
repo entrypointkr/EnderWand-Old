@@ -14,6 +14,6 @@ fun <T> slotItemOf(point: Point<Int>, item: (T) -> ItemStack) =
     slotButtonOf<T>(point) { button { item(it) } }
 
 data class SlotButton<T>(
-    val slot: Int,
-    val button: (T) -> Button<T>
+    var slot: Int,
+    var button: (T) -> Button<T>
 )
