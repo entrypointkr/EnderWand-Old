@@ -4,10 +4,10 @@ import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.fill
 import kr.entree.enderwand.bukkit.inventory.inventory
-import kr.entree.enderwand.bukkit.inventory.slot
 import kr.entree.enderwand.bukkit.item.item
 import kr.entree.enderwand.bukkit.item.meta
 import kr.entree.enderwand.bukkit.item.setName
+import kr.entree.enderwand.math.to
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -18,11 +18,6 @@ import org.bukkit.inventory.ItemStack
 /**
  * Created by JunHyung Lim on 2020-01-20
  */
-val PAGINATOR_DEFAULT_BUTTONS = listOf(
-    Material.OAK_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON,
-    Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.STONE_BUTTON
-)
-
 fun ButtonContext<Paginator>.remove() {
     source.buttons.remove(button)
     update()
@@ -40,8 +35,6 @@ inline fun paginator(
     refer.prevPagingButton,
     refer.nextPagingButton,
     refer.slots,
-    refer.prevPageButtonSlot,
-    refer.nextPageButtonSlot,
     refer.extraButtons
 )
 
@@ -50,26 +43,27 @@ inline fun paginator(
     row: Int = 6,
     configure: Paginator.() -> Unit = {}
 ): Paginator {
-    val pagingButtonFactory: Paginator.(Boolean) -> ItemStack = { left ->
-        item(PAGINATOR_DEFAULT_BUTTONS.random()) {
-            amount = page
-            meta {
-                setName(
-                    if (left) "&c<- &a[${page}/${maxPage}]"
-                    else "&a[${page}/${maxPage}] &c->"
-                )
-            }
-        }
-    }
     return Paginator(
         title,
         mutableListOf(),
         row,
-        { pagingButtonFactory(true) },
-        { pagingButtonFactory(false) },
+        slotItemOf(3 to row - 1) {
+            item(Paginator.DEFAULT_BUTTONS.random()) {
+                amount = it.page
+                meta {
+                    setName("&c<- &a[${it.page}/${it.maxPage}]")
+                }
+            }
+        },
+        slotItemOf(5 to row - 1) {
+            item(Paginator.DEFAULT_BUTTONS.random()) {
+                amount = it.page
+                meta {
+                    setName("&a[${it.page}/${it.maxPage}] &c->")
+                }
+            }
+        },
         (0 until ((row - 1) * 9)).toList(),
-        slot(3, row - 1),
-        slot(5, row - 1),
         buttonMapOf(mutableMapOf())
     ).apply(configure)
 }
@@ -78,11 +72,9 @@ class Paginator(
     val title: String,
     var buttons: MutableList<Button<Paginator>>,
     val row: Int = 6,
-    var prevPagingButton: Paginator.() -> ItemStack,
-    var nextPagingButton: Paginator.() -> ItemStack,
+    var prevPagingButton: SlotButton<Paginator>,
+    var nextPagingButton: SlotButton<Paginator>,
     var slots: List<Int>,
-    var prevPageButtonSlot: Int,
-    var nextPageButtonSlot: Int,
     val extraButtons: ButtonMap<Paginator>
 ) : DynamicView<Paginator> {
     var page: Int = 1
@@ -91,6 +83,13 @@ class Paginator(
     val isPageableToNext get() = page < maxPage
     override var closeHandler: (InventoryCloseEvent) -> Unit = {}
     override val instance get() = this
+
+    companion object {
+        val DEFAULT_BUTTONS = listOf(
+            Material.OAK_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON,
+            Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.STONE_BUTTON
+        )
+    }
 
     override fun create() = inventory(title, row) { update(this) }
 
@@ -102,9 +101,9 @@ class Paginator(
             setItem(slot, button.item())
         }
         if (isPageableToPrev)
-            setItem(prevPageButtonSlot, prevPagingButton())
+            setItem(prevPagingButton.slot, prevPagingButton.button(this@Paginator).item())
         if (isPageableToNext)
-            setItem(nextPageButtonSlot, nextPagingButton())
+            setItem(nextPagingButton.slot, nextPagingButton.button(this@Paginator).item())
         extraButtons.forEach { (slot, button) ->
             setItem(slot, button.item())
         }
@@ -120,10 +119,10 @@ class Paginator(
             } else null
             if (button != null) {
                 button.invokeLater(e, this)
-            } else if (e.rawSlot == prevPageButtonSlot && isPageableToPrev) {
+            } else if (e.rawSlot == prevPagingButton.slot && isPageableToPrev) {
                 page--
                 update(e.inventory)
-            } else if (e.rawSlot == nextPageButtonSlot && isPageableToNext) {
+            } else if (e.rawSlot == nextPagingButton.slot && isPageableToNext) {
                 page++
                 update(e.inventory)
             } else {

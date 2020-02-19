@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.view
 
 import kr.entree.enderwand.bukkit.inventory.slot
+import kr.entree.enderwand.math.Point
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -15,10 +16,10 @@ interface ButtonMap<T> : MutableMap<Int, Button<T>> {
 
     infix fun Int.slotOf(button: Button<T>)
 
-    fun button(slots: Iterable<Pair<Int, Int>>, item: () -> ItemStack) =
+    fun button(slots: Iterable<Point<Int>>, item: () -> ItemStack) =
         Button<T>(item).also { button -> slots.forEach { (x, y) -> slot(x, y) slotOf button } }
 
-    fun button(vararg slots: Pair<Int, Int>, item: () -> ItemStack) =
+    fun button(vararg slots: Point<Int>, item: () -> ItemStack) =
         button(slots.asIterable(), item)
 
     fun button(slot: Int, item: () -> ItemStack) =
