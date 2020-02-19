@@ -121,9 +121,11 @@ class Paginator(
                 button.invokeLater(e, this)
             } else if (e.rawSlot == prevPagingButton.slot && isPageableToPrev) {
                 page--
+                prevPagingButton.button(this)
                 update(e.inventory)
             } else if (e.rawSlot == nextPagingButton.slot && isPageableToNext) {
                 page++
+                nextPagingButton.button(this)
                 update(e.inventory)
             } else {
                 extraButtons[e.rawSlot]?.invokeLater(e, this)
