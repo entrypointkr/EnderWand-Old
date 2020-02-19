@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.external.luckperm
 
 import net.luckperms.api.LuckPerms
+import net.luckperms.api.query.QueryOptions
 import org.bukkit.Bukkit
 import org.bukkit.entity.HumanEntity
 
@@ -23,3 +24,7 @@ val HumanEntity.luckpermGroupName
 
 val HumanEntity.luckpermGroupDisplayName
     get() = luckpermGroup?.displayName
+
+val HumanEntity.luckpermPrefix
+    get() = toLuckpermUser?.cachedData
+        ?.getMetaData(QueryOptions.defaultContextualOptions())?.prefix
