@@ -47,20 +47,28 @@ inline fun paginator(
         title,
         mutableListOf(),
         row,
-        slotItemOf(3 to row - 1) {
-            item(Paginator.DEFAULT_BUTTONS.random()) {
-                amount = it.page
-                meta {
-                    setName("&c<- &a[${it.page}/${it.maxPage}]")
+        slotButtonOf(3 to row - 1) {
+            button<Paginator> {
+                item(Paginator.DEFAULT_BUTTONS.random()) {
+                    amount = it.page
+                    meta {
+                        setName("&c<- &a[${it.page}/${it.maxPage}]")
+                    }
                 }
+            }.onClick {
+                it.page--
             }
         },
-        slotItemOf(5 to row - 1) {
-            item(Paginator.DEFAULT_BUTTONS.random()) {
-                amount = it.page
-                meta {
-                    setName("&a[${it.page}/${it.maxPage}] &c->")
+        slotButtonOf(5 to row - 1) {
+            button<Paginator> {
+                item(Paginator.DEFAULT_BUTTONS.random()) {
+                    amount = it.page
+                    meta {
+                        setName("&a[${it.page}/${it.maxPage}] &c->")
+                    }
                 }
+            }.onClick {
+                it.page++
             }
         },
         (0 until ((row - 1) * 9)).toList(),
@@ -120,11 +128,9 @@ class Paginator(
             if (button != null) {
                 button.invokeLater(e, this)
             } else if (e.rawSlot == prevPagingButton.slot && isPageableToPrev) {
-                page--
                 prevPagingButton.button(this)
                 update(e.inventory)
             } else if (e.rawSlot == nextPagingButton.slot && isPageableToNext) {
-                page++
                 nextPagingButton.button(this)
                 update(e.inventory)
             } else {
