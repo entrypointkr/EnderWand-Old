@@ -38,10 +38,7 @@ class CommandBuilder<S : Sender> {
             if (completer != null) {
                 val input = args.last()
                 completer.tabComplete().filter { it.startsWith(input) }
-            } else {
-                args.pos -= arguments.size
-                tabCompleter(this)
-            }
+            } else emptyList()
         }
     }
 
