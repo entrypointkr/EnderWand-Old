@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 fun <T> button(item: () -> ItemStack) = Button<T>(item)
 
 class Button<T>(
-    val item: () -> ItemStack,
+    var item: () -> ItemStack,
     var click: ButtonContext<T>.() -> Unit = {}
 ) {
     val metadata: MutableMap<String, Any> by lazy { mutableMapOf<String, Any>() }
