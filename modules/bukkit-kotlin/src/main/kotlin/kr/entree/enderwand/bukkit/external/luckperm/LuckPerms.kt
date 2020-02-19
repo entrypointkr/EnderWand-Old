@@ -11,7 +11,15 @@ val luckPerms: LuckPerms by lazy {
     Bukkit.getServicesManager().load(LuckPerms::class.java)!!
 }
 
-val HumanEntity.group
-    get() = luckPerms.userManager.getUser(uniqueId)?.primaryGroup?.run {
+val HumanEntity.toLuckpermUser get() = luckPerms.userManager.getUser(uniqueId)
+
+val HumanEntity.luckpermGroup
+    get() = toLuckpermUser?.primaryGroup?.run {
         luckPerms.groupManager.getGroup(this)
-    }?.name
+    }
+
+val HumanEntity.luckpermGroupName
+    get() = luckpermGroup?.name
+
+val HumanEntity.luckpermGroupDisplayName
+    get() = luckpermGroup?.displayName
