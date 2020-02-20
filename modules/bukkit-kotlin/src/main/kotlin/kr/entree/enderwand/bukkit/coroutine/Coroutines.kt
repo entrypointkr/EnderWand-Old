@@ -11,6 +11,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.*
 import org.bukkit.plugin.Plugin
+import java.time.Duration
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -26,6 +27,8 @@ inline fun <T : Plugin> T.launch(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend PluginCoroutineScope<T>.() -> Unit
 ) = scope.run { delegate.launch(context, start) { block() } }
+
+suspend fun delay(duration: Duration) = delay(duration.toMillis())
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
 suspend inline fun <reified T : Event> Plugin.awaitOn(
