@@ -12,4 +12,4 @@ val LocalTime.isPastOrNow get() = this <= LocalTime.now()
 
 val LocalTime.isFuture get() = this > LocalTime.now()
 
-val LocalTime.nowGap: Duration get() = Duration.between(LocalTime.now(), this)
+val LocalTime.nowTimeGap: Duration get() = Duration.between(LocalTime.now(), this)
