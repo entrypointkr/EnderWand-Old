@@ -24,7 +24,7 @@ val <T : Plugin> T.scope
 inline fun <T : Plugin> T.launch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    crossinline block: suspend PluginCoroutineScopeImpl<T>.() -> Unit
+    crossinline block: suspend PluginCoroutineScope<T>.() -> Unit
 ) = scope.run { delegate.launch(context, start) { block() } }
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
@@ -59,10 +59,10 @@ suspend fun Plugin.awaitJoin(uuid: UUID) = awaitJoin { it.uniqueId == uuid }
 
 suspend fun Plugin.awaitJoin(name: String) = awaitJoin { it.name.equals(name, true) }
 
-suspend inline fun <reified T : Event, P : Plugin> PluginEntityCoroutineScopeImpl<Player, P>.awaitOn(): T {
+suspend inline fun <reified T : Event, P : Plugin> PluginEntityCoroutineScope<Player, P>.awaitOn(): T {
     while (true) {
         val event = awaitOn<T>()
-        if (event.findPlayer()?.uniqueId == uniqueId)
+        if (event.findPlayer()?.uniqueId == entity.uniqueId)
             return event
     }
 }
