@@ -14,7 +14,6 @@ import org.bukkit.plugin.Plugin
 import java.time.Duration
 import java.util.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Created by JunHyung Lim on 2020-01-09
@@ -23,7 +22,7 @@ val <T : Plugin> T.scope
     get() = PluginCoroutineScopeImpl(this, CoroutineScope(SchedulerDispatcher(scheduler)))
 
 inline fun <T : Plugin> T.launch(
-    context: CoroutineContext = EmptyCoroutineContext,
+    context: CoroutineContext = Dispatchers.Bukkit,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend PluginCoroutineScope<T>.() -> Unit
 ) = scope.run { delegate.launch(context, start) { block() } }
