@@ -1,10 +1,6 @@
 package kr.entree.enderwand.bukkit.coroutine
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kr.entree.enderwand.bukkit.enderWand
+import kotlinx.coroutines.*
 import kr.entree.enderwand.bukkit.event.findPlayer
 import kr.entree.enderwand.bukkit.event.on
 import kr.entree.enderwand.bukkit.scheduler.scheduler
@@ -16,19 +12,27 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.*
 import org.bukkit.plugin.Plugin
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Created by JunHyung Lim on 2020-01-09
  */
-val Plugin.scope get() = CoroutineScope(SchedulerDispatcher(scheduler))
+val <T : Plugin> T.scope
+    get() = PluginCoroutineScopeImpl(this, CoroutineScope(SchedulerDispatcher(scheduler)))
+
+inline fun <T : Plugin> T.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline block: suspend PluginCoroutineScopeImpl<T>.() -> Unit
+) = scope.run { delegate.launch(context, start) { block() } }
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
-suspend inline fun <reified T : Event> awaitOn(
+suspend inline fun <reified T : Event> Plugin.awaitOn(
     priority: EventPriority = EventPriority.MONITOR,
-    ignoreCancelled: Boolean = true,
-    plugin: Plugin = enderWand
+    ignoreCancelled: Boolean = true
 ) = suspendCancellableCoroutine<T> { continuation ->
-    val listener = plugin.on<T> {
+    val listener = on<T>(priority, ignoreCancelled) {
         if (continuation.isActive) {
             continuation.apply {
                 Dispatchers.Bukkit.resumeUndispatched(this@on)
@@ -42,7 +46,7 @@ suspend inline fun <reified T : Event> awaitOn(
     }
 }
 
-suspend inline fun awaitJoin(filter: (Player) -> Boolean): Player {
+suspend inline fun Plugin.awaitJoin(filter: (Player) -> Boolean): Player {
     while (true) {
         val joinEvent = awaitOn<PlayerJoinEvent>()
         if (filter(joinEvent.player)) {
@@ -51,21 +55,21 @@ suspend inline fun awaitJoin(filter: (Player) -> Boolean): Player {
     }
 }
 
-suspend fun awaitJoin(uuid: UUID) = awaitJoin { it.uniqueId == uuid }
+suspend fun Plugin.awaitJoin(uuid: UUID) = awaitJoin { it.uniqueId == uuid }
 
-suspend fun awaitJoin(name: String) = awaitJoin { it.name.equals(name, true) }
+suspend fun Plugin.awaitJoin(name: String) = awaitJoin { it.name.equals(name, true) }
 
-suspend inline fun <reified T : Event> Player.awaitOn(): T {
+suspend inline fun <reified T : Event, P : Plugin> PluginEntityCoroutineScopeImpl<Player, P>.awaitOn(): T {
     while (true) {
-        val event = kr.entree.enderwand.bukkit.coroutine.awaitOn<T>()
+        val event = awaitOn<T>()
         if (event.findPlayer()?.uniqueId == uniqueId)
             return event
     }
 }
 
-suspend fun Player.awaitChat() = awaitOn<AsyncPlayerChatEvent>().message
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitOn<AsyncPlayerChatEvent>().message
 
-suspend fun Player.awaitInteract(): Block {
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
     while (true) {
         val event = awaitOn<PlayerInteractEvent>()
         val clickedBlock = event.clickedBlock
@@ -75,6 +79,17 @@ suspend fun Player.awaitInteract(): Block {
     }
 }
 
-suspend fun Player.awaitMove() = awaitOn<PlayerMoveEvent>().run { from to to }
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitMove(): Pair<Any, Any?> =
+    awaitOn<PlayerMoveEvent>().run { from to to }
 
-suspend fun Player.awaitResourcePackStatus() = awaitOn<PlayerResourcePackStatusEvent>().status
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitResourcePackStatus() =
+    awaitOn<PlayerResourcePackStatusEvent>().status
+
+inline fun <T : Plugin> Player.onAction(
+    plugin: T,
+    dispatcher: BukkitDispatcher = Dispatchers.Bukkit,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline block: suspend PluginPlayerCoroutineScope<T>.() -> Unit
+) = PluginPlayerCoroutineScope(this, plugin.scope).run {
+    launch(dispatcher, start) { block() }
+}
