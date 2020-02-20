@@ -8,14 +8,16 @@ import org.bukkit.plugin.Plugin
 /**
  * Created by JunHyung Lim on 2020-02-15
  */
-interface PluginCoroutineScope<T : Plugin> : CoroutineScope, Plugin
+interface PluginCoroutineScope<T : Plugin> : CoroutineScope, Plugin {
+    val plugin: T
+}
 
 interface PluginEntityCoroutineScope<E : Entity, T : Plugin> : PluginCoroutineScope<T> {
     val entity: E
 }
 
 class PluginCoroutineScopeImpl<T : Plugin>(
-    val plugin: T,
+    override val plugin: T,
     val delegate: CoroutineScope
 ) : PluginCoroutineScope<T>, Plugin by plugin, CoroutineScope by delegate
 
