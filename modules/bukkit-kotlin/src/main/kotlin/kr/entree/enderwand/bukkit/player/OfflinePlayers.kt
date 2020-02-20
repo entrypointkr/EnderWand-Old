@@ -1,9 +1,7 @@
 package kr.entree.enderwand.bukkit.player
 
-import kotlinx.coroutines.launch
 import kr.entree.enderwand.bukkit.coroutine.awaitJoin
 import kr.entree.enderwand.bukkit.coroutine.launch
-import kr.entree.enderwand.bukkit.coroutine.scope
 import kr.entree.enderwand.bukkit.enderWand
 import kr.entree.enderwand.bukkit.sender.tell
 import org.bukkit.OfflinePlayer
@@ -16,10 +14,7 @@ fun OfflinePlayer.tellOrLater(message: String) {
         player?.tell(message)
     } else {
         enderWand.launch {
-
-        }
-        enderWand.scope.launch {
-            enderWand.awaitJoin(uniqueId).tell(message)
+            awaitJoin(uniqueId).tell(message)
         }
     }
 }
