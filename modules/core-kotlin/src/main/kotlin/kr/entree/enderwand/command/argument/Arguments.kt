@@ -3,7 +3,10 @@
 package kr.entree.enderwand.command.argument
 
 import kr.entree.enderwand.collection.Reader
-import kr.entree.enderwand.command.*
+import kr.entree.enderwand.command.ArgumentParseException
+import kr.entree.enderwand.command.CommandBuilder
+import kr.entree.enderwand.command.NotDoubleException
+import kr.entree.enderwand.command.NotIntException
 import kr.entree.enderwand.command.sender.Sender
 import kr.entree.enderwand.time.DURATION_PARSER_ENGLISH
 import kr.entree.enderwand.time.DURATION_PARSER_KOREAN
@@ -29,6 +32,14 @@ val PARSER_DURATION_KOREAN: Parser = {
     DURATION_PARSER_KOREAN.parse(it.read())
 }
 
+val PARSER_STRING_LIST: Parser = {
+    mutableListOf<String>().apply {
+        while (it.canRead()) {
+            add(it.read())
+        }
+    }
+}
+
 fun Iterable<Argument<*>>.parse(reader: Reader<String>): List<Any> {
     val ret = mutableListOf<Any>()
     forEachIndexed { index, argument ->
@@ -52,6 +63,11 @@ inline fun <S : Sender> CommandBuilder<S>.string(
     description: String = "string",
     configure: Argument<String>.() -> Unit = {}
 ) = Argument<String>(description, parser = PARSER_STRING).apply(configure)
+
+inline fun <S : Sender> CommandBuilder<S>.strings(
+    description: String = "strings",
+    configure: Argument<List<String>>.() -> Unit = {}
+) = Argument<List<String>>(description, parser = PARSER_STRING_LIST).apply(configure)
 
 inline fun <S : Sender> CommandBuilder<S>.int(
     description: String = "int",

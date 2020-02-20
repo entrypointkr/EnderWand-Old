@@ -63,23 +63,25 @@ suspend fun Plugin.awaitJoin(uuid: UUID) = awaitJoin { it.uniqueId == uuid }
 suspend fun Plugin.awaitJoin(name: String) = awaitJoin { it.name.equals(name, true) }
 
 suspend inline fun <reified T : Event, P : Plugin> PluginEntityCoroutineScope<Player, P>.awaitOn(): T {
-    while (true) {
+    while (isActive) {
         val event = awaitOn<T>()
         if (event.findPlayer()?.uniqueId == entity.uniqueId)
             return event
     }
+    throw CancellationException()
 }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitOn<AsyncPlayerChatEvent>().message
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
-    while (true) {
+    while (isActive) {
         val event = awaitOn<PlayerInteractEvent>()
         val clickedBlock = event.clickedBlock
         if (clickedBlock != null) {
             return clickedBlock
         }
     }
+    throw CancellationException()
 }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitMove(): Pair<Any, Any?> =
