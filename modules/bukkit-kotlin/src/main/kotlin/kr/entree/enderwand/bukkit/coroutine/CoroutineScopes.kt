@@ -35,6 +35,7 @@ class PluginPlayerCoroutineScope<T : Plugin>(
     private val pluginScope: PluginCoroutineScope<T>
 ) : PluginEntityCoroutineScope<Player, T>, Player by player, PluginCoroutineScope<T> by pluginScope {
     override val entity get() = player
+    var isCancelWhenQuit: Boolean = true
 
     override fun getPlayer() = player
 
@@ -51,4 +52,4 @@ suspend fun <E : Entity, P : Plugin> PluginCoroutineScope<P>.onEntity(
 suspend fun <P : Plugin> PluginCoroutineScope<P>.on(
     player: Player,
     block: suspend PluginPlayerCoroutineScope<P>.() -> Unit
-) = block(PluginPlayerCoroutineScope(player, this))
+) = PluginPlayerCoroutineScope(player, this).block()

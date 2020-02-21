@@ -1,6 +1,5 @@
 package kr.entree.enderwand.bukkit.event
 
-import kr.entree.enderwand.bukkit.scheduler.scheduler
 import org.bukkit.Bukkit
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
@@ -36,11 +35,7 @@ inline fun <reified T : Event> Plugin.on(
 ) =
     FunctionalEventExecutor(ignoreCancelled) { _, event ->
         if (event is T) {
-            if (priority == EventPriority.MONITOR) {
-                scheduler.run { receiver(event, this) }
-            } else {
-                receiver(event, this)
-            }
+            receiver(event, this)
         }
     }.also { executor ->
         Bukkit.getPluginManager()

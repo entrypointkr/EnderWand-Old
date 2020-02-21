@@ -6,6 +6,7 @@ import kr.entree.enderwand.bukkit.event.on
 import kr.entree.enderwand.bukkit.scheduler.scheduler
 import kr.entree.enderwand.coroutine.SchedulerDispatcher
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
@@ -61,20 +62,26 @@ suspend fun Plugin.awaitJoin(uuid: UUID) = awaitJoin { it.uniqueId == uuid }
 
 suspend fun Plugin.awaitJoin(name: String) = awaitJoin { it.name.equals(name, true) }
 
-suspend inline fun <reified T : Event, P : Plugin> PluginEntityCoroutineScope<Player, P>.awaitOn(): T {
+suspend inline fun <reified T : Event, E : Entity, P : Plugin> PluginEntityCoroutineScope<E, out P>.awaitWhile(filter: (T) -> Boolean): T {
     while (isActive) {
-        val event = awaitOn<T>()
-        if (event.findPlayer()?.uniqueId == entity.uniqueId)
+        val event = plugin.awaitOn<T>()
+        if (filter(event))
             return event
     }
     throw CancellationException()
 }
 
-suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitOn<AsyncPlayerChatEvent>().message
+suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Plugin>.awaitUnique() =
+    awaitWhile<T, Player, Plugin> {
+        it.findPlayer()?.uniqueId == entity.uniqueId
+    }
+
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitUnique<AsyncPlayerChatEvent>().message
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
+    awaitUnique<PlayerInteractEntityEvent>()
     while (isActive) {
-        val event = awaitOn<PlayerInteractEvent>()
+        val event = awaitUnique<PlayerInteractEvent>()
         val clickedBlock = event.clickedBlock
         if (clickedBlock != null) {
             return clickedBlock
@@ -84,10 +91,10 @@ suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): 
 }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitMove(): Pair<Any, Any?> =
-    awaitOn<PlayerMoveEvent>().run { from to to }
+    awaitUnique<PlayerMoveEvent>().run { from to to }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitResourcePackStatus() =
-    awaitOn<PlayerResourcePackStatusEvent>().status
+    awaitUnique<PlayerResourcePackStatusEvent>().status
 
 inline fun <T : Plugin> Player.onAction(
     plugin: T,
@@ -95,5 +102,14 @@ inline fun <T : Plugin> Player.onAction(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend PluginPlayerCoroutineScope<T>.() -> Unit
 ) = PluginPlayerCoroutineScope(this, plugin.scope).run {
-    launch(dispatcher, start) { block() }
+    launch(dispatcher, start) {
+        val job = launch { block() }
+        withContext(job) {
+            awaitUnique<PlayerQuitEvent>()
+            delay(1)
+            if (isCancelWhenQuit) {
+                cancel()
+            }
+        }
+    }
 }
