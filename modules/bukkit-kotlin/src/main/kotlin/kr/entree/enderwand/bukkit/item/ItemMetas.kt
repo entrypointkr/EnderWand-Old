@@ -22,7 +22,8 @@ fun ItemMeta.setName(name: String) = setDisplayName(name.colorize())
 fun ItemMeta.setLore(vararg lore: String) = setLore(lore.map { it.colorize() })
 
 inline fun ItemMeta.lore(configure: MutableList<String>.() -> Unit) {
-    lore = mutableListOf<String>().apply(configure).map { it.colorize() }
+    val newLore = (lore ?: mutableListOf()).apply(configure).map { it.colorize() }
+    lore = newLore
 }
 
 val ItemStack.displayName get() = itemMeta?.displayName ?: ""
