@@ -26,6 +26,6 @@ data class Title(
     var stay: Int = 40,
     var fadeOut: Int = 10
 ) {
-    fun sendTo(player: Player) =
+    infix fun sendTo(player: Player) =
         player.sendTitle(title, subTitle, fadeIn, stay, fadeOut)
 }
