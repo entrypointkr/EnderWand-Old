@@ -147,7 +147,7 @@ fun Inventory.hasSpaces(item: ItemStack) =
         IndexedValue(
             index, when {
                 element.isAir() -> item.maxStackSize
-                element.isSimilar(item) -> (item.maxStackSize - element.amount).coerceAtMost(0)
+                element.isSimilar(item) -> (item.maxStackSize - element.amount).coerceAtLeast(0)
                 else -> 0
             }
         )
