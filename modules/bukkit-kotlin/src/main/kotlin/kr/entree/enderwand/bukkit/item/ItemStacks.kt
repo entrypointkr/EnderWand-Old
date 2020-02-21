@@ -15,10 +15,13 @@ val EMPTY_ITEM by lazy { item(Material.AIR) }
 fun Material.toItem(amount: Int = 1) = ItemStack(this, amount)
 
 inline fun item(material: Material = Material.AIR, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
-    material.toItem().apply(configure)
+    material.toItem(amount).apply(configure)
 
 inline fun item(item: ItemStack, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
-    ItemStack(item).apply(configure)
+    ItemStack(item).apply {
+        setAmount(amount)
+        configure()
+    }
 
 fun emptyItem() = EMPTY_ITEM
 
