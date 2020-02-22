@@ -104,7 +104,7 @@ class Paginator(
 
     fun button(item: ViewContext<Paginator>.() -> ItemStack) = Button(item)
 
-    inline fun prevPageButton(
+    inline fun prevPagingButton(
         slot: Point<Int> = 3 to row - 1,
         crossinline item: ViewContext<Paginator>.() -> ItemStack = {
             item(DEFAULT_BUTTONS.random()) {
@@ -125,7 +125,7 @@ class Paginator(
         } at slot
     }
 
-    inline fun nextPageButton(
+    inline fun nextPagingButton(
         slot: Point<Int> = 5 to row - 1,
         crossinline item: ViewContext<Paginator>.() -> ItemStack = {
             item(DEFAULT_BUTTONS.random()) {
