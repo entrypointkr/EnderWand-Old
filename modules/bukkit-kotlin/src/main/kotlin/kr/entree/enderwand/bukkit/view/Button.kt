@@ -5,20 +5,24 @@ import kr.entree.enderwand.bukkit.scheduler.scheduler
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.ItemStack
 
-fun <T> button(item: () -> ItemStack) = Button<T>(item)
+fun <T> button(item: ViewContext<T>.() -> ItemStack) = Button(item)
 
 class Button<T>(
-    var item: () -> ItemStack,
+    var item: ViewContext<T>.() -> ItemStack,
     var click: ButtonContext<T>.() -> Unit = {}
 ) {
     val metadata: MutableMap<String, Any> by lazy { mutableMapOf<String, Any>() }
 
-    operator fun invoke(event: InventoryEvent, source: T) {
-        click(ButtonContext(this, event, source))
+    operator fun invoke(event: InventoryEvent, viewCtx: ViewContext<T>) {
+        click(ButtonContext(this, event, viewCtx))
     }
 
-    fun invokeLater(event: InventoryEvent, source: T) {
-        enderWand.scheduler { invoke(event, source) }
+    fun item(view: T) {
+        item(ViewContextImpl(view))
+    }
+
+    fun invokeLater(event: InventoryEvent, viewCtx: ViewContext<T>) {
+        enderWand.scheduler { click(ButtonContext(this, event, viewCtx)) }
     }
 
     fun onClick(click: ButtonContext<T>.() -> Unit): Button<T> {
@@ -26,9 +30,3 @@ class Button<T>(
         return this
     }
 }
-
-class ButtonContext<T>(
-    val button: Button<T>,
-    override val event: InventoryEvent,
-    override val source: T
-) : ViewContext<T>

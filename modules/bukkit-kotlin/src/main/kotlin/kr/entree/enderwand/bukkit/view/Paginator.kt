@@ -7,6 +7,7 @@ import kr.entree.enderwand.bukkit.inventory.inventory
 import kr.entree.enderwand.bukkit.item.item
 import kr.entree.enderwand.bukkit.item.meta
 import kr.entree.enderwand.bukkit.item.setName
+import kr.entree.enderwand.math.Point
 import kr.entree.enderwand.math.to
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -18,11 +19,6 @@ import org.bukkit.inventory.ItemStack
 /**
  * Created by JunHyung Lim on 2020-01-20
  */
-fun ButtonContext<Paginator>.remove() {
-    source.buttons.remove(button)
-    update()
-}
-
 inline fun paginator(
     refer: Paginator,
     title: String = refer.title,
@@ -30,61 +26,42 @@ inline fun paginator(
     configure: Paginator.() -> Unit
 ): Paginator = Paginator(
     title,
-    refer.buttons,
     row,
-    refer.prevPagingButton,
-    refer.nextPagingButton,
+    refer.buttons,
     refer.slots,
-    refer.extraButtons
-)
+    refer.staticButtons
+).apply(configure)
 
 inline fun paginator(
     title: String,
     row: Int = 6,
     configure: Paginator.() -> Unit = {}
-): Paginator {
-    return Paginator(
-        title,
-        mutableListOf(),
-        row,
-        slotButtonOf(3 to row - 1) {
-            button<Paginator> {
-                item(Paginator.DEFAULT_BUTTONS.random()) {
-                    amount = it.page
-                    meta {
-                        setName("&c<- &a[${it.page}/${it.maxPage}]")
-                    }
-                }
-            }.onClick { it.page-- }
-        },
-        slotButtonOf(5 to row - 1) {
-            button<Paginator> {
-                item(Paginator.DEFAULT_BUTTONS.random()) {
-                    amount = it.page
-                    meta {
-                        setName("&a[${it.page}/${it.maxPage}] &c->")
-                    }
-                }
-            }.onClick { it.page++ }
-        },
-        (0 until ((row - 1) * 9)).toList(),
-        buttonMapOf(mutableMapOf())
-    ).apply(configure)
+) = Paginator(
+    title = title,
+    row = row,
+    buttons = mutableListOf(),
+    slots = (0 until ((row - 1) * 9)).toList(),
+    staticButtons = buttonMapOf(row * 9, mutableMapOf())
+)
+
+fun ButtonContext<Paginator>.remove() {
+    view.buttons.remove(button)
+    update()
 }
 
 class Paginator(
     val title: String,
-    var buttons: MutableList<Button<Paginator>>,
     val row: Int = 6,
-    var prevPagingButton: SlotButton<Paginator>,
-    var nextPagingButton: SlotButton<Paginator>,
+    var buttons: MutableList<Button<Paginator>>,
     var slots: List<Int>,
-    val extraButtons: ButtonMap<Paginator>
-) : DynamicView<Paginator> {
+    val staticButtons: MutableMap<Int, Button<Paginator>>
+) : DynamicView<Paginator>, ButtonMap<Paginator> {
+    override val size = row * 9
     var page: Int = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
     val isPageableToPrev get() = page > 1
     val isPageableToNext get() = page < maxPage
+    val context = ViewContextImpl(this)
     override var closeHandler: (InventoryCloseEvent) -> Unit = {}
     override val instance get() = this
 
@@ -102,14 +79,10 @@ class Paginator(
         var index = (page - 1) * slots.size
         for (slot in slots) {
             val button = buttons.getOrNull(index++) ?: break
-            setItem(slot, button.item())
+            setItem(slot, button.item(context))
         }
-        if (isPageableToPrev)
-            setItem(prevPagingButton.slot, prevPagingButton.button(this@Paginator).item())
-        if (isPageableToNext)
-            setItem(nextPagingButton.slot, nextPagingButton.button(this@Paginator).item())
-        extraButtons.forEach { (slot, button) ->
-            setItem(slot, button.item())
+        staticButtons.forEach { (slot, button) ->
+            setItem(slot, button.item(context))
         }
     }
 
@@ -122,22 +95,58 @@ class Paginator(
                 buttons.getOrNull(offset + slot)
             } else null
             if (button != null) {
-                button.invokeLater(e, this)
-            } else if (e.rawSlot == prevPagingButton.slot && isPageableToPrev) {
-                prevPagingButton.button(this).invoke(e, this)
-                update(e.inventory)
-            } else if (e.rawSlot == nextPagingButton.slot && isPageableToNext) {
-                nextPagingButton.button(this).invoke(e, this)
-                update(e.inventory)
+                button.invokeLater(e, context)
             } else {
-                extraButtons[e.rawSlot]?.invokeLater(e, this)
+                staticButtons[e.rawSlot]?.invokeLater(e, context)
             }
         }
     }
 
-    fun button(item: () -> ItemStack) = Button<Paginator>(item)
+    fun button(item: ViewContext<Paginator>.() -> ItemStack) = Button(item)
 
-    inline fun extra(builder: ButtonMap<Paginator>.() -> Unit) = extraButtons.apply(builder)
+    inline fun prevPageButton(
+        slot: Point<Int> = 3 to row - 1,
+        crossinline item: ViewContext<Paginator>.() -> ItemStack = {
+            item(DEFAULT_BUTTONS.random()) {
+                amount = view.page
+                meta {
+                    setName("&c<- &a[${view.page}/${view.maxPage}]")
+                }
+            }
+        }
+    ) = button {
+        item()
+    }.also { child ->
+        button {
+            child.item(this)
+        }.onClick {
+            view.page--
+            child.click(this)
+        } at slot
+    }
+
+    inline fun nextPageButton(
+        slot: Point<Int> = 5 to row - 1,
+        crossinline item: ViewContext<Paginator>.() -> ItemStack = {
+            item(DEFAULT_BUTTONS.random()) {
+                amount = view.page
+                meta {
+                    setName("&a[${view.page}/${view.maxPage}] &c->")
+                }
+            }
+        }
+    ) = button {
+        item()
+    }.also { child ->
+        button {
+            child.item(this)
+        }.onClick {
+            view.page++
+            child.click(this)
+        } at slot
+    }
+
+    override fun Button<Paginator>.at(slot: Int) = staticButtons.put(slot, this)
 
     operator fun Button<Paginator>.unaryPlus() = buttons.add(this)
 

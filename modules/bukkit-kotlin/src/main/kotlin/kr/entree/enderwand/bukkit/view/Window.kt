@@ -22,26 +22,25 @@ class Window(
     val row: Int,
     val buttons: MutableMap<Int, Button<Window>>
 ) : DynamicView<Window>, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
-    override val slots get() = row * 9
+    override val size get() = row * 9
     override var closeHandler: (InventoryCloseEvent) -> Unit = {}
     override val instance get() = this
+    val ctx = ViewContextImpl(this)
 
     override fun create() = inventory(title, row) { update(this) }
 
     override fun handle(e: InventoryEvent) {
         e.cancelViolationClick()
         if (e is InventoryClickEvent && e.isNotDoubleClick) {
-            buttons[e.rawSlot]?.invokeLater(e, this)
+            buttons[e.rawSlot]?.invokeLater(e, ctx)
         }
     }
 
     override fun update(inventory: Inventory) {
         for (i in 0 until inventory.size) {
-            inventory.setItem(i, buttons[i]?.item?.invoke())
+            inventory.setItem(i, buttons[i]?.item?.invoke(ctx))
         }
     }
 
-    override infix fun Int.slotOf(button: Button<Window>) {
-        buttons[this] = button
-    }
+    override fun Button<Window>.at(slot: Int) = buttons.put(slot, this)
 }
