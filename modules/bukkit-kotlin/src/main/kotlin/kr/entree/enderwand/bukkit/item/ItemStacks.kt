@@ -17,7 +17,7 @@ fun Material.toItem(amount: Int = 1) = ItemStack(this, amount)
 inline fun item(material: Material = Material.AIR, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
     material.toItem(amount).apply(configure)
 
-inline fun item(item: ItemStack, amount: Int = 1, configure: ItemStack.() -> Unit = {}) =
+inline fun item(item: ItemStack, amount: Int = item.amount, configure: ItemStack.() -> Unit = {}) =
     ItemStack(item).apply {
         setAmount(amount)
         configure()
