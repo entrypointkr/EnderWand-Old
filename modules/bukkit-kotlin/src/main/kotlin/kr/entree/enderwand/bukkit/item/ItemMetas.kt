@@ -7,7 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta
 /**
  * Created by JunHyung Lim on 2020-01-25
  */
-inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) = metaOf<ItemMeta>(configure)
+inline fun ItemStack.meta(configure: ItemMeta.() -> Unit) = metaOf(configure)
 
 inline fun <reified T : ItemMeta> ItemStack.metaOf(configure: T.() -> Unit) {
     val meta = itemMeta
