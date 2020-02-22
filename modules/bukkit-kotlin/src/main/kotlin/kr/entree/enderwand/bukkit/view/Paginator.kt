@@ -57,8 +57,8 @@ class Paginator(
     val isPageableToPrev get() = page > 1
     val isPageableToNext get() = page < maxPage
     override val context = ViewContextImpl(this)
-    var handler: ViewEventContext<Paginator>.(InventoryEvent) -> Unit = {}
-    var updater: Paginator.() -> Unit = {}
+    private var handler: ViewEventContext<Paginator>.(InventoryEvent) -> Unit = {}
+    private var updater: Paginator.() -> Unit = {}
 
     companion object {
         val DEFAULT_BUTTONS = listOf(
@@ -71,7 +71,6 @@ class Paginator(
 
     override fun update(inventory: Inventory) {
         inventory.fill(null)
-        buttons.clear()
         updater(this)
         var index = (page - 1) * slots.size
         for (slot in slots) {
@@ -160,7 +159,10 @@ class Paginator(
     }
 
     fun onUpdate(updater: Paginator.() -> Unit): Paginator {
-        this.updater = updater
+        this.updater = {
+            buttons.clear()
+            updater()
+        }
         return this
     }
 
