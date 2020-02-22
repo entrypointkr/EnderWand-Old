@@ -22,7 +22,9 @@ class StandardCommand<S : Sender>(
 ) : Command<S>, CommandDetailed {
     override fun execute(ctx: CommandContext<S, Reader<String>>) {
         try {
-            ctx.sender.checkPermission(permission)
+            if (permission.isNotBlank()) {
+                ctx.sender.checkPermission(permission)
+            }
             executor(CommandContext(ctx.sender, ctx.args))
         } catch (ex: ExecutorException) {
             ex.stack += "" to this
