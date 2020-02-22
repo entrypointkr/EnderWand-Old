@@ -4,6 +4,7 @@ import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.fill
 import kr.entree.enderwand.bukkit.inventory.inventory
+import kr.entree.enderwand.bukkit.item.emptyItem
 import kr.entree.enderwand.bukkit.item.item
 import kr.entree.enderwand.bukkit.item.meta
 import kr.entree.enderwand.bukkit.item.setName
@@ -42,7 +43,7 @@ inline fun paginator(
     buttons = mutableListOf(),
     slots = (0 until ((row - 1) * 9)).toList(),
     staticButtons = buttonMapOf(row * 9, mutableMapOf())
-)
+).apply(configure)
 
 fun ButtonContext<Paginator>.remove() {
     view.buttons.remove(button)
@@ -118,10 +119,13 @@ class Paginator(
         item()
     }.also { child ->
         button {
-            child.item(this)
+            if (isPageableToPrev) {
+                child.item(this)
+            } else emptyItem()
         }.onClick {
             view.page--
             child.click(this)
+            update()
         } at slot
     }
 
@@ -139,10 +143,13 @@ class Paginator(
         item()
     }.also { child ->
         button {
-            child.item(this)
+            if (isPageableToNext) {
+                child.item(this)
+            } else emptyItem()
         }.onClick {
             view.page++
             child.click(this)
+            update()
         } at slot
     }
 
