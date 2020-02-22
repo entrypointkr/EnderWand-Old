@@ -19,15 +19,16 @@ fun HumanEntity.openView(view: View) =
 infix fun View.openTo(player: HumanEntity) = player.openView(this)
 
 class ViewManager : Listener {
-    val handlerMap = mutableMapOf<UUID, View>()
+    val viewMap = mutableMapOf<UUID, View>()
 
-    fun open(player: HumanEntity, view: View) =
-        view.create().apply {
-            player.openInventory(this)
-            handlerMap[player.uniqueId] = view
-        }
+    fun open(player: HumanEntity, view: View) {
+        val current = viewMap[player.uniqueId]
+        view.context.previousView = current
+        player.openInventory(view.create())
+        viewMap[player.uniqueId] = view
+    }
 
-    fun notify(e: InventoryEvent) = handlerMap[e.view.player.uniqueId]?.handle(e)
+    fun notify(e: InventoryEvent) = viewMap[e.view.player.uniqueId]?.handle(e)
 
     @EventHandler
     fun onClick(e: InventoryClickEvent) = notify(e)
@@ -35,7 +36,7 @@ class ViewManager : Listener {
     @EventHandler
     fun onClose(e: InventoryCloseEvent) {
         notify(e)
-        handlerMap.remove(e.player.uniqueId)
+        viewMap.remove(e.player.uniqueId)
     }
 
     @EventHandler

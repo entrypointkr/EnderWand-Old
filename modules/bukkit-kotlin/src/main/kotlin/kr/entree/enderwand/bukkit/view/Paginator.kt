@@ -12,7 +12,6 @@ import kr.entree.enderwand.math.Point
 import kr.entree.enderwand.math.to
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -45,26 +44,21 @@ inline fun paginator(
     staticButtons = buttonMapOf(row * 9, mutableMapOf())
 ).apply(configure)
 
-fun ButtonContext<Paginator>.remove() {
-    view.buttons.remove(button)
-    update()
-}
-
 class Paginator(
     val title: String,
     val row: Int = 6,
     var buttons: MutableList<Button<Paginator>>,
     var slots: List<Int>,
     val staticButtons: MutableMap<Int, Button<Paginator>>
-) : DynamicView<Paginator>, ButtonMap<Paginator> {
+) : DynamicView, ButtonMap<Paginator> {
     override val size = row * 9
     var page: Int = 1
     val maxPage get() = buttons.size / slots.size + (buttons.size % slots.size).coerceAtMost(1)
     val isPageableToPrev get() = page > 1
     val isPageableToNext get() = page < maxPage
-    val context = ViewContextImpl(this)
-    override var closeHandler: (InventoryCloseEvent) -> Unit = {}
-    override val instance get() = this
+    override val context = ViewContextImpl(this)
+    var handler: ViewEventContext<Paginator>.(InventoryEvent) -> Unit = {}
+    var updater: Paginator.() -> Unit = {}
 
     companion object {
         val DEFAULT_BUTTONS = listOf(
@@ -75,32 +69,35 @@ class Paginator(
 
     override fun create() = inventory(title, row) { update(this) }
 
-    override fun update(inventory: Inventory) = inventory.run {
-        fill(null)
+    override fun update(inventory: Inventory) {
+        inventory.fill(null)
+        buttons.clear()
+        updater(this)
         var index = (page - 1) * slots.size
         for (slot in slots) {
             val button = buttons.getOrNull(index++) ?: break
-            setItem(slot, button.item(context))
+            inventory.setItem(slot, button.item(context))
         }
         staticButtons.forEach { (slot, button) ->
-            setItem(slot, button.item(context))
+            inventory.setItem(slot, button.item(context))
         }
     }
 
-    override fun handle(e: InventoryEvent) {
-        e.cancelViolationClick()
-        if (e is InventoryClickEvent && e.isNotDoubleClick) {
-            val slot = slots.indexOf(e.rawSlot)
+    override fun handle(event: InventoryEvent) {
+        event.cancelViolationClick()
+        if (event is InventoryClickEvent && event.isNotDoubleClick) {
+            val slot = slots.indexOf(event.rawSlot)
             val button = if (slot >= 0) {
                 val offset = (page - 1) * slots.size
                 buttons.getOrNull(offset + slot)
             } else null
             if (button != null) {
-                button.invokeLater(e, context)
+                button.invokeLater(event, context)
             } else {
-                staticButtons[e.rawSlot]?.invokeLater(e, context)
+                staticButtons[event.rawSlot]?.invokeLater(event, context)
             }
         }
+        handler(ViewEventContextImpl(event, ViewContextImpl(this)), event)
     }
 
     fun button(item: ViewContext<Paginator>.() -> ItemStack) = Button(item)
@@ -123,7 +120,9 @@ class Paginator(
                 child.item(this)
             } else emptyItem()
         }.onClick {
-            view.page--
+            if (isPageableToPrev) {
+                view.page--
+            }
             child.click(this)
             update()
         } at slot
@@ -147,10 +146,22 @@ class Paginator(
                 child.item(this)
             } else emptyItem()
         }.onClick {
-            view.page++
+            if (isPageableToNext) {
+                view.page++
+            }
             child.click(this)
             update()
         } at slot
+    }
+
+    fun onEvent(handler: ViewEventContext<Paginator>.(InventoryEvent) -> Unit): Paginator {
+        this.handler = handler
+        return this
+    }
+
+    fun onUpdate(updater: Paginator.() -> Unit): Paginator {
+        this.updater = updater
+        return this
     }
 
     override fun Button<Paginator>.at(slot: Int) = staticButtons.put(slot, this)

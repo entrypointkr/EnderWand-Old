@@ -8,13 +8,13 @@ import org.bukkit.inventory.ItemStack
 /**
  * Created by JunHyung Lim on 2020-01-14
  */
-fun <T> buttonMapOf(
+fun <T: View> buttonMapOf(
     size: Int,
     mutableMap: MutableMap<Int, Button<T>>
 ) =
     ButtonMapImpl(mutableMap, size)
 
-interface ButtonMap<T> {
+interface ButtonMap<T: View> {
     val size: Int
     val indices get() = 0 until size
 
@@ -40,7 +40,7 @@ interface ButtonMap<T> {
     fun fill(item: ItemStack) = fill(button { item })
 }
 
-class ButtonMapImpl<T>(
+class ButtonMapImpl<T: View>(
     val map: MutableMap<Int, Button<T>>,
     override val size: Int
 ) : ButtonMap<T>, MutableMap<Int, Button<T>> by map {

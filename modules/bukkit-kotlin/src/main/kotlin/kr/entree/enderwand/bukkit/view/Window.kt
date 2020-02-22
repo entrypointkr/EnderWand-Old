@@ -4,7 +4,6 @@ import kr.entree.enderwand.bukkit.event.cancelViolationClick
 import kr.entree.enderwand.bukkit.event.isNotDoubleClick
 import kr.entree.enderwand.bukkit.inventory.inventory
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 
@@ -21,25 +20,30 @@ class Window(
     val title: String,
     val row: Int,
     val buttons: MutableMap<Int, Button<Window>>
-) : DynamicView<Window>, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
+) : DynamicView, ButtonMap<Window>, MutableMap<Int, Button<Window>> by buttons {
     override val size get() = row * 9
-    override var closeHandler: (InventoryCloseEvent) -> Unit = {}
-    override val instance get() = this
-    val ctx = ViewContextImpl(this)
+    override val context = ViewContextImpl(this)
+    var handler: ViewEventContext<Window>.(InventoryEvent) -> Unit = {}
 
     override fun create() = inventory(title, row) { update(this) }
 
-    override fun handle(e: InventoryEvent) {
-        e.cancelViolationClick()
-        if (e is InventoryClickEvent && e.isNotDoubleClick) {
-            buttons[e.rawSlot]?.invokeLater(e, ctx)
+    override fun handle(event: InventoryEvent) {
+        event.cancelViolationClick()
+        if (event is InventoryClickEvent && event.isNotDoubleClick) {
+            buttons[event.rawSlot]?.invokeLater(event, context)
         }
+        handler(ViewEventContextImpl(event, ViewContextImpl(this)), event)
     }
 
     override fun update(inventory: Inventory) {
         for (i in 0 until inventory.size) {
-            inventory.setItem(i, buttons[i]?.item?.invoke(ctx))
+            inventory.setItem(i, buttons[i]?.item?.invoke(context))
         }
+    }
+
+    fun onEvent(handler: ViewEventContext<Window>.(InventoryEvent) -> Unit): Window {
+        this.handler = handler
+        return this
     }
 
     override fun Button<Window>.at(slot: Int) = buttons.put(slot, this)

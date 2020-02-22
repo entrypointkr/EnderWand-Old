@@ -34,7 +34,7 @@ val Material.recipe
                         it.addIngredient(base)
                         it.addIngredient(dye)
                     }
-                } else EmptyRecipe
+                } else null
             } else recipe
         }
     } else null
@@ -43,7 +43,3 @@ val RecipeChoice.itemType
     get() = (this as? RecipeChoice.MaterialChoice)?.choices?.minBy {
         it.name.length
     } ?: itemStack.type
-
-object EmptyRecipe : Recipe {
-    override fun getResult() = item(Material.AIR)
-}
