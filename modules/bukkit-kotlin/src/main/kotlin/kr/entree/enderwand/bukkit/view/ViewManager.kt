@@ -23,7 +23,9 @@ class ViewManager : Listener {
 
     fun open(player: HumanEntity, view: View) {
         val current = viewMap[player.uniqueId]
-        view.context.previousView = current
+        if (current?.context?.previousView != view) {
+            view.context.previousView = current
+        }
         player.openInventory(view.create())
         viewMap[player.uniqueId] = view
     }

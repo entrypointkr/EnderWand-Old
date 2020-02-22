@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.view
 
 import kr.entree.enderwand.bukkit.event.player
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryEvent
 
 /**
@@ -15,6 +16,8 @@ fun <T : View> ViewEventContext<T>.close() =
 interface ViewEventContext<T : View> : ViewContext<T> {
     val event: InventoryEvent
     val delegate: ViewContext<T>
+    val clicker get() = event.view.player
+    val player get() = clicker as Player
 }
 
 class ViewEventContextImpl<T : View>(
