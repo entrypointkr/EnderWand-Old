@@ -65,11 +65,11 @@ class StandardData(
 class FileFactory(
     private val file: File
 ) : StandardFactory {
-    override fun createReader() = BufferedReader(FileReader(file))
+    override fun createReader() = file.bufferedReader()
 
     override fun createWriter(): Writer {
         file.parentFile?.mkdirs()
-        return BufferedWriter(FileWriter(file))
+        return file.bufferedWriter()
     }
 }
 
