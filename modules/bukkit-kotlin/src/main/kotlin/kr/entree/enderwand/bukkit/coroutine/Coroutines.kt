@@ -84,7 +84,7 @@ suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Pl
         }
     }
 
-suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitInput<AsyncPlayerChatEvent>()
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitInput<AsyncPlayerChatEvent>().message
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
     while (isActive) {
