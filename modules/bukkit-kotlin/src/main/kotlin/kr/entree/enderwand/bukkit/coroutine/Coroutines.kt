@@ -32,7 +32,7 @@ suspend fun delay(duration: Duration) = delay(duration.toMillis())
 
 @UseExperimental(ExperimentalCoroutinesApi::class)
 suspend inline fun <reified T : Event> Plugin.awaitOn(
-    priority: EventPriority = EventPriority.MONITOR,
+    priority: EventPriority = EventPriority.NORMAL,
     ignoreCancelled: Boolean = true
 ) = suspendCancellableCoroutine<T> { continuation ->
     val listener = on<T>(priority, ignoreCancelled) {
