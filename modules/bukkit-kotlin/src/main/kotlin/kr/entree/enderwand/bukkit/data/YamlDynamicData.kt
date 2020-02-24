@@ -15,8 +15,8 @@ import java.io.Writer
 inline fun yamlDataOf(file: File, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
     dataOf(file, YamlDynamicData(yamlData)).apply(configure)
 
-inline fun yamlDataOf(fileName: String, plugin: Plugin, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
-    dataOf(File(plugin.dataFolder, fileName), YamlDynamicData(yamlData)).apply(configure)
+inline fun Plugin.yamlDataOf(fileName: String, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
+    dataOf(File(dataFolder, fileName), YamlDynamicData(yamlData)).apply(configure)
 
 class YamlDynamicData(
     private val data: YamlData
