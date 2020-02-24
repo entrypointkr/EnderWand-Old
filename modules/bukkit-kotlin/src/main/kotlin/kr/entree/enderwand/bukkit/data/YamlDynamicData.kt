@@ -4,6 +4,7 @@ import kr.entree.enderwand.data.DynamicData
 import kr.entree.enderwand.data.StandardData
 import kr.entree.enderwand.data.dataOf
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.Reader
 import java.io.Writer
@@ -13,6 +14,9 @@ import java.io.Writer
  */
 inline fun yamlDataOf(file: File, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
     dataOf(file, YamlDynamicData(yamlData)).apply(configure)
+
+inline fun yamlDataOf(fileName: String, plugin: Plugin, yamlData: YamlData, configure: StandardData.() -> Unit = {}) =
+    dataOf(File(plugin.dataFolder, fileName), YamlDynamicData(yamlData)).apply(configure)
 
 class YamlDynamicData(
     private val data: YamlData
