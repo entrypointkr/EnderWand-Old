@@ -8,6 +8,7 @@ import kr.entree.enderwand.coroutine.SchedulerDispatcher
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.*
@@ -76,12 +77,18 @@ suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Pl
         it.findPlayer()?.uniqueId == entity.uniqueId
     }
 
-suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitUnique<AsyncPlayerChatEvent>().message
+suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Plugin>.awaitInput() =
+    awaitUnique<T>().also { event ->
+        if (event is Cancellable) {
+            event.isCancelled = true
+        }
+    }
+
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitInput<AsyncPlayerChatEvent>()
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
-    awaitUnique<PlayerInteractEntityEvent>()
     while (isActive) {
-        val event = awaitUnique<PlayerInteractEvent>()
+        val event = awaitInput<PlayerInteractEvent>()
         val clickedBlock = event.clickedBlock
         if (clickedBlock != null) {
             return clickedBlock
@@ -91,10 +98,10 @@ suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): 
 }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitMove(): Pair<Any, Any?> =
-    awaitUnique<PlayerMoveEvent>().run { from to to }
+    awaitInput<PlayerMoveEvent>().run { from to to }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitResourcePackStatus() =
-    awaitUnique<PlayerResourcePackStatusEvent>().status
+    awaitInput<PlayerResourcePackStatusEvent>().status
 
 inline fun <T : Plugin> Player.onAction(
     plugin: T,
