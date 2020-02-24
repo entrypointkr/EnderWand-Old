@@ -9,30 +9,17 @@ import org.bukkit.plugin.Plugin
 /**
  * Created by JunHyung Lim on 2020-01-22
  */
-fun registerPacketListener(
-    types: Array<PacketType>,
-    priority: ListenerPriority,
-    plugin: Plugin = enderWand,
+fun Plugin.registerPacketListener(
+    vararg types: PacketType,
+    priority: ListenerPriority = ListenerPriority.NORMAL,
     receiver: PacketEvent.() -> Unit
 ) = ProtocolLibrary.getProtocolManager().addPacketListener(
     FunctionalPacketAdapter(
-        plugin,
+        this,
         priority,
-        types,
+        types.asIterable(),
         receiver
     )
-)
-
-fun registerPacketListener(
-    type: PacketType,
-    priority: ListenerPriority = ListenerPriority.NORMAL,
-    plugin: Plugin = enderWand,
-    receiver: PacketEvent.() -> Unit
-) = registerPacketListener(
-    arrayOf(type),
-    priority,
-    plugin,
-    receiver
 )
 
 fun NetworkMarker.addOutputHandler(
@@ -50,9 +37,9 @@ fun NetworkMarker.addOutputHandler(
 class FunctionalPacketAdapter(
     aPlugin: Plugin,
     priority: ListenerPriority,
-    types: Array<PacketType>,
+    types: Iterable<PacketType>,
     val receiver: (PacketEvent) -> Unit
-) : PacketAdapter(aPlugin, priority, *types) {
+) : PacketAdapter(aPlugin, priority, *(types.distinct().toTypedArray())) {
     override fun onPacketSending(event: PacketEvent) {
         receiver(event)
     }
