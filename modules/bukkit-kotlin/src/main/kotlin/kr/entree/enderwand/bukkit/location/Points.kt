@@ -13,11 +13,11 @@ fun Point<Int>.toVector(vector: Vector = Vector()) = Vector(
     (y shl 4) + (vector.blockZ and 15)
 )
 
-fun <T : Number> Point<T>.format(format: String) = MessageFormat.format(format, x, y)
+fun <T> Point<T>.format(format: String) where T : Number, T : Comparable<T> = MessageFormat.format(format, x, y)
 
-fun <T : Number> Point<T>.serializeToString() = format("{0},{1}")
+fun <T> Point<T>.serializeToString() where T : Number, T : Comparable<T> = format("{0},{1}")
 
-inline fun <T : Number> String.toPoint(mapper: (String) -> T) =
+inline fun <T> String.toPoint(mapper: (String) -> T) where T : Number, T : Comparable<T> =
     split(",").run {
         Point(mapper(get(0)), mapper(get(1)))
     }

@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.location
 
 import kr.entree.enderwand.math.Point
+import kr.entree.enderwand.math.Point3D
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.text.MessageFormat
@@ -22,6 +23,14 @@ fun Location.toBlockVector() = Vector(
     blockX,
     blockY,
     blockZ
+)
+
+fun Location.toBlockPoint() = Point3D(
+    blockX, blockY, blockZ
+)
+
+fun Location.toPoint() = Point3D(
+    x, y, z
 )
 
 fun Vector.toChunkPoint() = Point(
