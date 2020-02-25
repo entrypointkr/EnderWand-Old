@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.message
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 /**
@@ -21,11 +22,13 @@ fun Player.sendTitle(title: Title) = title.sendTo(this)
 
 data class Title(
     var title: String,
-    var subTitle: String,
+    var subTitle: String = "",
     var fadeIn: Int = 10,
     var stay: Int = 40,
     var fadeOut: Int = 10
 ) {
     infix fun sendTo(player: Player) =
         player.sendTitle(title, subTitle, fadeIn, stay, fadeOut)
+
+    fun sendToAll() = Bukkit.getOnlinePlayers().forEach { sendTo(it) }
 }
