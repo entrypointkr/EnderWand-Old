@@ -4,6 +4,7 @@ import kr.entree.enderwand.bukkit.enderWand
 import kr.entree.enderwand.bukkit.exception.*
 import kr.entree.enderwand.command.*
 import kr.entree.enderwand.string.unicodeBlock
+import kr.entree.enderwand.time.UnknownUnitException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.logging.Level
@@ -68,6 +69,7 @@ class BukkitCommandHelper : (CommandTrouble) -> Unit {
             is InvalidUsageException -> sender.tellError("잘못된 사용법입니다.")
             is CommandException -> sender.tellError(throwable.errorMessage)
             is NoItemInMainHandException -> sender.tellError("손에 아이템을 들어주세요!")
+            is UnknownUnitException -> sender.tellError("알 수 없는 단위: ${throwable.unit}")
             is Minecraft -> sender.tellError(throwable.toString())
             else -> {
                 if (sender.isOp()) {
