@@ -1,5 +1,8 @@
 package kr.entree.enderwand.math
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Region3D<T>(
     val from: Point3D<T>,
     val to: Point3D<T>

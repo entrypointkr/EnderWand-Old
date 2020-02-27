@@ -51,3 +51,15 @@ inline fun String.toVector(mapper: (String) -> Double = { it.toDouble() }) =
     split(",").run {
         Vector(mapper(get(0)), mapper(get(1)), mapper(get(2)))
     }
+
+operator fun Location.component1() = x
+
+operator fun Location.component2() = y
+
+operator fun Location.component3() = z
+
+operator fun Location.component4() = world
+
+operator fun Location.component5() = yaw
+
+operator fun Location.component6() = pitch

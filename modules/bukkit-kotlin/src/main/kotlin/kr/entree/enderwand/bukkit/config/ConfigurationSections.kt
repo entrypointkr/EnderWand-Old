@@ -38,6 +38,12 @@ inline fun ConfigurationSection.getMaterials(
     }
 } ?: def
 
+inline fun <reified T> ConfigurationSection.getOrPut(id: String, default: () -> T): T {
+    return get(id)?.run { this as T } ?: default().apply {
+        set(id, this)
+    }
+}
+
 inline fun ConfigurationSection.forEach(receiver: (Pair<String, Any?>) -> Unit) {
     for (key in getKeys(false)) {
         receiver(Pair(key, get(key)))
