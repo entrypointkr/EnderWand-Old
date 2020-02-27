@@ -46,7 +46,9 @@ class StandardData(
         }
     }
 
-    override fun save() = data.save(standardFactory.createWriter())
+    override fun save() = standardFactory.createWriter().use {
+        data.save(it)
+    }
 
     inline fun saveAsync(
         asyncRunner: (() -> Unit) -> Any = {
