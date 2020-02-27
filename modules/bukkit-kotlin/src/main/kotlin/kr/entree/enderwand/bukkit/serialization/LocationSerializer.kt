@@ -12,7 +12,7 @@ object LocationSerializer : KSerializer<Location> {
 
     override fun serialize(encoder: Encoder, obj: Location) {
         val (x, y, z, world, yaw, pitch) = obj
-        encoder.beginStructureDescriptive(descriptor) {
+        encoder.useStructureDescriptive(descriptor) {
             encodeDouble(0, x)
             encodeDouble(1, y)
             encodeDouble(2, z)
@@ -32,7 +32,7 @@ object LocationSerializer : KSerializer<Location> {
     }
 
     override fun patch(decoder: Decoder, old: Location): Location {
-        decoder.beginStructureDescriptive(descriptor) {
+        decoder.useStructureDescriptive(descriptor) {
                 old.x = decodeElement(0).toDouble()
             old.y = decodeElement(1).toDouble()
             old.z = decodeElement(2).toDouble()

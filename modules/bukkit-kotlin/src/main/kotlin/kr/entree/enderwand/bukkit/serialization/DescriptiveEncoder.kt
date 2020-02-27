@@ -5,7 +5,7 @@ import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 
-fun Encoder.beginStructureDescriptive(
+fun Encoder.useStructureDescriptive(
     desc: SerialDescriptor,
     vararg typeParams: KSerializer<*>,
     configure: DescriptiveEncoder.() -> Unit = {}

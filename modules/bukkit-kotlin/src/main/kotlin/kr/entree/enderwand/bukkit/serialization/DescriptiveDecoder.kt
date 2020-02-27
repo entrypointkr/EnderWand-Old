@@ -6,10 +6,9 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.internal.nullable
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
-fun Decoder.beginStructureDescriptive(
+fun Decoder.useStructureDescriptive(
     desc: SerialDescriptor,
     vararg typeParams: KSerializer<*>,
     configure: DescriptiveDecoder.() -> Unit = {}
