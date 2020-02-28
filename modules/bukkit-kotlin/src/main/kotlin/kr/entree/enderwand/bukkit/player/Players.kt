@@ -1,7 +1,6 @@
 package kr.entree.enderwand.bukkit.player
 
 import kr.entree.enderwand.bukkit.command.BukkitSender
-import kr.entree.enderwand.bukkit.exception.NoItemInMainHandException
 import kr.entree.enderwand.bukkit.exception.UnknownPlayerException
 import kr.entree.enderwand.bukkit.item.isNotAir
 import org.bukkit.Bukkit
@@ -35,4 +34,4 @@ fun BukkitSender.toPlayerOrThrow() = player ?: throw UnknownPlayerException(name
 
 val HumanEntity.itemOnHand get() = inventory.itemInMainHand
 
-fun HumanEntity.itemOnHandNotAir() = itemOnHand.takeIf { it.isNotAir() } ?: throw NoItemInMainHandException(inventory)
+val HumanEntity.itemOnHandNotAir get() = itemOnHand.takeIf { it.isNotAir() }
