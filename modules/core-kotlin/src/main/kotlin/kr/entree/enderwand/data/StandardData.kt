@@ -5,11 +5,13 @@ import kotlinx.coroutines.launch
 import kr.entree.enderwand.scheduler.Scheduler
 import java.io.*
 import java.time.Duration
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Created by JunHyung Lim on 2020-01-01
  */
-fun dataOf(file: File, data: DynamicData) = StandardData(FileFactory(file), data)
+fun dataOf(file: File, data: DynamicData, logger: Logger) = StandardData(FileFactory(file), data, logger)
 
 fun StandardData.autoSave(
     syncScheduler: Scheduler,
@@ -19,7 +21,8 @@ fun StandardData.autoSave(
 
 class StandardData(
     val standardFactory: StandardFactory,
-    val data: DynamicData
+    val data: DynamicData,
+    val logger: Logger
 ) : Data, DynamicData by data {
     inline fun useReader(user: (Reader) -> Unit) {
         try {
@@ -29,7 +32,19 @@ class StandardData(
         }
     }
 
-    override fun load() = useReader { load(it) }
+    fun read(reader: Reader) = try {
+        load(reader)
+    } catch (ex: Exception) {
+        logger.log(Level.SEVERE, ex) { "Error while file $standardFactory reading" }
+    }
+
+    fun write(writer: Writer) = try {
+        save(writer)
+    } catch (ex: Exception) {
+        logger.log(Level.SEVERE, ex) { "Error while file $standardFactory writing" }
+    }
+
+    override fun load() = useReader { read(it) }
 
     inline fun loadAsync(
         asyncRunner: (() -> Unit) -> Any = {
@@ -40,7 +55,7 @@ class StandardData(
             useReader {
                 val text = it.readText()
                 syncRunner {
-                    data.load(StringReader(text))
+                    read(StringReader(text))
                 }
             }
         }
@@ -55,7 +70,7 @@ class StandardData(
             GlobalScope.launch { it() }
         }
     ) = StringWriter().run {
-        save(this)
+        write(this)
         asyncRunner {
             standardFactory.createWriter().use {
                 it.write(toString())
@@ -64,7 +79,7 @@ class StandardData(
     }
 }
 
-class FileFactory(
+data class FileFactory(
     private val file: File
 ) : StandardFactory {
     override fun createReader() = file.bufferedReader()
