@@ -1,11 +1,12 @@
 package kr.entree.enderwand.bukkit.location
 
-import kr.entree.enderwand.math.Region3D
+import kr.entree.enderwand.math.rangeTo
 import org.bukkit.Location
 
-fun regionOf(from: Location, to: Location): Region3D<Int> {
-    if (from.world != to.world) throw NotIdenticalWorldException(from, to)
-    return Region3D(from.toBlockPoint(), to.toBlockPoint())
-}
+operator fun Location.rangeTo(other: Location) =
+    if (world != other.world)
+        throw NotIdenticalWorldException(this, other)
+    else
+        toBlockPoint()..other.toBlockPoint()
 
-fun regionOfNullable(from: Location, to: Location) = runCatching { regionOf(from, to) }.getOrNull()
+fun regionOfNullable(from: Location, to: Location) = runCatching { from..to }.getOrNull()
