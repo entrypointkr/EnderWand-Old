@@ -8,7 +8,7 @@ interface ViewContext<T : View> {
     var previousView: View?
 }
 
-class ViewContextImpl<T: View>(
+class ViewContextImpl<T : View>(
     override val view: T,
     override var previousView: View? = null
 ) : ViewContext<T>

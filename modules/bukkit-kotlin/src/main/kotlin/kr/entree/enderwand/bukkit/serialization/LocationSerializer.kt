@@ -33,7 +33,7 @@ object LocationSerializer : KSerializer<Location> {
 
     override fun patch(decoder: Decoder, old: Location): Location {
         decoder.useStructureDescriptive(descriptor) {
-                old.x = decodeElement(0).toDouble()
+            old.x = decodeElement(0).toDouble()
             old.y = decodeElement(1).toDouble()
             old.z = decodeElement(2).toDouble()
             old.world = decodeNullableElement(3)?.run {
