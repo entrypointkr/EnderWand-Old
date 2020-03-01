@@ -1,6 +1,7 @@
 package kr.entree.enderwand.bukkit.view
 
 import kr.entree.enderwand.bukkit.enderWand
+import kr.entree.enderwand.bukkit.player.ensureCursorItem
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -38,7 +39,8 @@ class ViewManager : Listener {
     @EventHandler
     fun onClose(e: InventoryCloseEvent) {
         notify(e)
-        viewMap.remove(e.player.uniqueId)
+        viewMap.remove(e.player.uniqueId) ?: return
+        e.player.ensureCursorItem()
     }
 
     @EventHandler
