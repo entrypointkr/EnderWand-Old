@@ -8,13 +8,13 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Created by JunHyung Lim on 2020-01-09
  */
-@UseExperimental(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 class SchedulerDispatcher(private val scheduler: Scheduler) : CoroutineDispatcher(), Delay {
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         scheduler.run { block.run() }
     }
 
-    @UseExperimental(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
         val task = scheduler.runLater(timeMillis.milliseconds) {
             continuation.apply {

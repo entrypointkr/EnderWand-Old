@@ -31,7 +31,7 @@ inline fun <T : Plugin> T.launch(
 
 suspend fun delay(duration: Duration) = delay(duration.toMillis())
 
-@UseExperimental(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 suspend inline fun <reified T : Event> Plugin.awaitOn(
     priority: EventPriority = EventPriority.NORMAL,
     ignoreCancelled: Boolean = true

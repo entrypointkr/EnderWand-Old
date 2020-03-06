@@ -1,17 +1,27 @@
 package kr.entree.enderwand.bukkit.serialization
 
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.builtins.serializer
 import kr.entree.enderwand.bukkit.location.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 
 @Serializer(forClass = Location::class)
 object LocationSerializer : KSerializer<Location> {
-    override val descriptor: SerialDescriptor = LocationDescriptor
+    override val descriptor: SerialDescriptor =
+        SerialDescriptor("org.bukkit.Location", StructureKind.OBJECT) {
+            val doubleDescriptor = Double.serializer().descriptor
+            val floatDescriptor = Float.serializer().descriptor
+            element("x", doubleDescriptor)
+            element("y", doubleDescriptor)
+            element("z", doubleDescriptor)
+            element("world", String.serializer().descriptor)
+            element("yaw", floatDescriptor)
+            element("pitch", floatDescriptor)
+        }
 
-    override fun serialize(encoder: Encoder, obj: Location) {
-        val (x, y, z, world, yaw, pitch) = obj
+    override fun serialize(encoder: Encoder, value: Location) {
+        val (x, y, z, world, yaw, pitch) = value
         encoder.useStructureDescriptive(descriptor) {
             encodeDouble(0, x)
             encodeDouble(1, y)
@@ -43,16 +53,5 @@ object LocationSerializer : KSerializer<Location> {
             old.pitch = decodeNullableElement(5)?.toFloat() ?: 0F
         }
         return old
-    }
-}
-
-object LocationDescriptor : SerialClassDescImpl("Location") {
-    init {
-        addElement("x")
-        addElement("y")
-        addElement("z")
-        addElement("world", true)
-        addElement("yaw", true)
-        addElement("pitch", true)
     }
 }

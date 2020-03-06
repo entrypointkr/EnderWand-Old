@@ -12,7 +12,7 @@ abstract class TypedConfigurationSerializer<T : ConfigurationSerializable> : KSe
         return ConfigurationSerializer.deserialize(decoder) as T
     }
 
-    override fun serialize(encoder: Encoder, obj: T) {
-        ConfigurationSerializer.serialize(encoder, obj)
+    override fun serialize(encoder: Encoder, value: T) {
+        ConfigurationSerializer.serialize(encoder, value)
     }
 }

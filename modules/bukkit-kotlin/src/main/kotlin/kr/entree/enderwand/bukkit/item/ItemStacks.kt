@@ -25,7 +25,7 @@ inline fun item(item: ItemStack, amount: Int = item.amount, configure: ItemStack
 
 fun emptyItem() = EMPTY_ITEM
 
-@UseExperimental(ExperimentalContracts::class)
+@OptIn(ExperimentalContracts::class)
 fun ItemStack?.isAir(): Boolean {
     contract {
         returns(false) implies (this@isAir != null)
@@ -33,7 +33,7 @@ fun ItemStack?.isAir(): Boolean {
     return this == null || type == Material.AIR
 }
 
-@UseExperimental(ExperimentalContracts::class)
+@OptIn(ExperimentalContracts::class)
 fun ItemStack?.isNotAir(): Boolean {
     contract {
         returns(true) implies (this@isNotAir != null)

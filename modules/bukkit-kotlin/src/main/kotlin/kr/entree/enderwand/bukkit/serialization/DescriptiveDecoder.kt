@@ -4,8 +4,8 @@ import kotlinx.serialization.CompositeDecoder
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
-import kotlinx.serialization.internal.StringSerializer
-import kotlinx.serialization.internal.nullable
+import kotlinx.serialization.builtins.nullable
+import kotlinx.serialization.builtins.serializer
 import kotlin.collections.set
 
 fun Decoder.useStructureDescriptive(
@@ -27,14 +27,12 @@ class DescriptiveDecoder(
         if (cached.containsKey(index)) {
             return cached.remove(index)
         }
+        if (decodeSequentially()) {
+            return decodeNullableSerializableElement(descriptor, index, String.serializer().nullable)
+        }
         mainLoop@ while (true) {
             when (val elementIndex = decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_ALL -> {
-                    return decodeNullableSerializableElement(descriptor, elementIndex, StringSerializer.nullable)
-                }
-                CompositeDecoder.READ_DONE -> {
-                    break@mainLoop
-                }
+                CompositeDecoder.READ_DONE -> break@mainLoop
                 index -> return decodeStringElement(descriptor, elementIndex)
                 else -> cached[elementIndex] = decodeStringElement(descriptor, elementIndex)
             }

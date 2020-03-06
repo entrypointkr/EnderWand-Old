@@ -1,12 +1,13 @@
 package kr.entree.enderwand.bukkit.serialization
 
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.AbstractEncoder
 import kr.entree.enderwand.bukkit.config.getOrPut
 import org.bukkit.configuration.ConfigurationSection
 
 class ConfigurationSectionEncoder(
     private val section: ConfigurationSection
-) : ElementValueEncoder() {
+) : AbstractEncoder() {
     var prefix = StringBuilder()
     var prefixMark = 0
     var key = ""
@@ -20,19 +21,22 @@ class ConfigurationSectionEncoder(
         prefix.append(string)
     }
 
-    override fun beginStructure(desc: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeEncoder {
+    override fun beginStructure(
+        descriptor: SerialDescriptor,
+        vararg typeSerializers: KSerializer<*>
+    ): CompositeEncoder {
         prefix.clear()
         prefix.append(key)
         prefixMark = prefix.length
-        lastKind = desc.kind
+        lastKind = descriptor.kind
         return this
     }
 
-    override fun endStructure(desc: SerialDescriptor) {
+    override fun endStructure(descriptor: SerialDescriptor) {
         prefix.setLength(prefixMark)
     }
 
-    override fun encodeElement(desc: SerialDescriptor, index: Int): Boolean {
+    override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
         val prev = prefix.length
         when (lastKind) {
             StructureKind.MAP -> {
@@ -44,7 +48,7 @@ class ConfigurationSectionEncoder(
                 // Nothing to do
             }
             StructureKind.CLASS -> {
-                appendPrefix(desc.getElementName(index))
+                appendPrefix(descriptor.getElementName(index))
             }
         }
         key = prefix.toString()

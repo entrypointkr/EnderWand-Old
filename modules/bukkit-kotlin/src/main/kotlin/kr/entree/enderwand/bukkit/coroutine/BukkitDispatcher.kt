@@ -19,7 +19,7 @@ val Dispatchers.EnderWand: SchedulerDispatcher by lazy {
 }
 val Dispatchers.Bukkit: BukkitDispatcher get() = MainBukkitDispatcher
 
-@UseExperimental(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 sealed class BukkitDispatcher : MainCoroutineDispatcher(), Delay by Dispatchers.EnderWand {
     override fun dispatch(context: CoroutineContext, block: Runnable) =
         Dispatchers.EnderWand.dispatch(context, block)
@@ -44,7 +44,7 @@ internal object ImmediateBukkitDispatcher : BukkitDispatcher() {
 }
 
 @AutoService(MainDispatcherFactory::class)
-@UseExperimental(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 internal class BukkitDispatcherFactory : MainDispatcherFactory {
     override val loadPriority get() = 0
 

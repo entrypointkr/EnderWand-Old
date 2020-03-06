@@ -11,7 +11,7 @@ import java.io.Reader
 import java.io.Writer
 import java.util.logging.Logger
 
-val Json.Companion.enderWand get() = Json(JsonConfiguration.Stable.copy(useArrayPolymorphism = true))
+val JsonConfiguration.Companion.EnderWand get() = JsonConfiguration.Stable.copy(useArrayPolymorphism = true)
 
 inline fun <T> serializableDataOf(
     serializer: KSerializer<T>,
@@ -19,7 +19,7 @@ inline fun <T> serializableDataOf(
     logger: Logger,
     noinline patcher: (T) -> Unit,
     noinline provider: () -> T,
-    format: StringFormat = Json.enderWand,
+    format: StringFormat = Json(JsonConfiguration.EnderWand),
     configure: StandardData.() -> Unit = {}
 ) = dataOf(file, SerializableData(serializer, patcher, provider, format), logger).apply(configure)
 
@@ -30,6 +30,7 @@ class SerializableData<T>(
     val format: StringFormat
 ) : DynamicData {
     override fun load(reader: Reader) {
+        JsonConfiguration.Stable
         val text = reader.readText()
         if (text.isNotBlank()) {
             patcher(format.parse(serializer, text))
