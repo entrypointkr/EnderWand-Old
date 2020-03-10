@@ -11,7 +11,7 @@ import java.io.Reader
 import java.io.Writer
 import java.util.logging.Logger
 
-val JsonConfiguration.Companion.EnderWand get() = JsonConfiguration.Stable.copy(useArrayPolymorphism = true)
+val JsonConfiguration.Companion.EnderWand get() = Stable.copy(useArrayPolymorphism = true)
 
 inline fun <T> serializableDataOf(
     serializer: KSerializer<T>,
