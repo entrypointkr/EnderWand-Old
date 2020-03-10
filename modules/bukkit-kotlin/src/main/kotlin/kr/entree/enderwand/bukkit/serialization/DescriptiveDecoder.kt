@@ -19,6 +19,12 @@ class DescriptiveDecoder(
     val decoder: CompositeDecoder
 ) : CompositeDecoder by decoder {
     fun doLoopIndexes(decoder: (index: Int) -> Unit) {
+        if (decodeSequentially()) {
+            repeat(descriptor.elementsCount) { index ->
+                decoder(index)
+            }
+            return
+        }
         mainLoop@ while (true) {
             when (val index = decodeElementIndex(descriptor)) {
                 CompositeDecoder.READ_DONE -> break@mainLoop
