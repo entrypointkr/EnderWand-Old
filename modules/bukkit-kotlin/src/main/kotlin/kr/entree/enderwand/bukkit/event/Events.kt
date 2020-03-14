@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin
 /**
  * Created by JunHyung Lim on 2020-01-06
  */
-inline val Cancellable.isNotCancelled get() = !isCancelled
+inline val Cancellable.isContinued get() = !isCancelled
 
 fun Event.findPlayer() =
     when (this) {

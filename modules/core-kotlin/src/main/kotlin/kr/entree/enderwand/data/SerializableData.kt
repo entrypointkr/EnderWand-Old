@@ -11,15 +11,16 @@ import java.io.Reader
 import java.io.Writer
 import java.util.logging.Logger
 
-val JsonConfiguration.Companion.EnderWand get() = Stable.copy(useArrayPolymorphism = true)
+val JsonConfiguration.Companion.IO get() = Stable.copy(useArrayPolymorphism = true)
 
+// TODO: Redesign
 inline fun <T> serializableDataOf(
     serializer: KSerializer<T>,
     file: File,
     logger: Logger,
     noinline patcher: (T) -> Unit,
     noinline provider: () -> T,
-    format: StringFormat = Json(JsonConfiguration.EnderWand),
+    format: StringFormat = Json(JsonConfiguration.IO),
     configure: StandardData.() -> Unit = {}
 ) = dataOf(file, SerializableData(serializer, patcher, provider, format), logger).apply(configure)
 

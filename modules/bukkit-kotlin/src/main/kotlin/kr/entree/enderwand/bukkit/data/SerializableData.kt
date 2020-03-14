@@ -6,7 +6,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kr.entree.enderwand.data.EnderWand
+import kr.entree.enderwand.data.IO
 import kr.entree.enderwand.data.StandardData
 import org.bukkit.plugin.Plugin
 import java.io.File
@@ -16,7 +16,7 @@ fun <T> Plugin.serializableDataOf(
     fileName: String,
     patcher: (T) -> Unit,
     provider: () -> T,
-    format: StringFormat = Json(JsonConfiguration.EnderWand),
+    format: StringFormat = Json(JsonConfiguration.IO),
     configure: StandardData.() -> Unit = {}
 ) = kr.entree.enderwand.data.serializableDataOf(
     serializer,
