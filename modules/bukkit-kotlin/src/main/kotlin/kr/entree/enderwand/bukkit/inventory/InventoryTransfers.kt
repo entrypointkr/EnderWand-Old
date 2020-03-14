@@ -72,7 +72,7 @@ fun Inventory.giveItem(
     if (giveCount <= 0) return JobResult.SUCCESS
     val spaceBySlot = mutableListOf<Pair<Int, Int>>()
     var totalSpace = 0
-    for ((slot, item) in withIndex()) {
+    for ((slot, item) in asIterable().withIndex()) {
         val space = item.space(giveItem)
         if (space >= 1) {
             spaceBySlot += slot to space
