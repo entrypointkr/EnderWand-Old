@@ -77,18 +77,20 @@ suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Pl
         it.findPlayer()?.uniqueId == entity.uniqueId
     }
 
-suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Plugin>.awaitInput() =
+suspend inline fun <reified T : Event> PluginEntityCoroutineScope<Player, out Plugin>.awaitCancelled() =
     awaitUnique<T>().also { event ->
         if (event is Cancellable) {
             event.isCancelled = true
         }
     }
 
-suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() = awaitInput<AsyncPlayerChatEvent>().message
+suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitChat() =
+    awaitCancelled<AsyncPlayerChatEvent>().apply { delay(1) }.message
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): Block {
     while (isActive) {
-        val event = awaitInput<PlayerInteractEvent>()
+        val event = awaitCancelled<PlayerInteractEvent>()
+        delay(1)
         val clickedBlock = event.clickedBlock
         if (clickedBlock != null) {
             return clickedBlock
@@ -98,10 +100,13 @@ suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitInteract(): 
 }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitMove(): Pair<Any, Any?> =
-    awaitInput<PlayerMoveEvent>().run { from to to }
+    awaitUnique<PlayerMoveEvent>().run {
+        delay(1)
+        from to to
+    }
 
 suspend fun <T : Plugin> PluginEntityCoroutineScope<Player, T>.awaitResourcePackStatus() =
-    awaitInput<PlayerResourcePackStatusEvent>().status
+    awaitUnique<PlayerResourcePackStatusEvent>().apply { delay(1) }.status
 
 inline fun <T : Plugin> Player.onAction(
     plugin: T,
