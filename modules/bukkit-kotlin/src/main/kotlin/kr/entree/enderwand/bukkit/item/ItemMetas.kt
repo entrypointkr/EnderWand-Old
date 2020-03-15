@@ -19,7 +19,11 @@ inline fun <reified T : ItemMeta> ItemStack.metaOf(configure: T.() -> Unit) {
 
 fun ItemMeta.setName(name: String) = setDisplayName(name.colorize())
 
+fun ItemStack.setName(name: String) = meta { setName(name) }
+
 fun ItemMeta.setLore(vararg lore: String) = setLore(lore.map { it.colorize() })
+
+fun ItemStack.setLore(vararg line: String) = meta { setLore(*line) }
 
 inline fun ItemMeta.lore(configure: MutableList<String>.() -> Unit) {
     val newLore = (lore ?: mutableListOf()).apply(configure).map { it.colorize() }
