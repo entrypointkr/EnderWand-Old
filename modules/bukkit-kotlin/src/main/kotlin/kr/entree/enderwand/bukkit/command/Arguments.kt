@@ -7,7 +7,7 @@ import kr.entree.enderwand.bukkit.exception.UnknownMaterialException
 import kr.entree.enderwand.bukkit.exception.UnknownPlayerException
 import kr.entree.enderwand.bukkit.player.toOfflinePlayer
 import kr.entree.enderwand.bukkit.player.toPlayer
-import kr.entree.enderwand.bukkit.recipe.recipe
+import kr.entree.enderwand.bukkit.recipe.recipes
 import kr.entree.enderwand.command.CommandBuilder
 import kr.entree.enderwand.command.CommandContext
 import kr.entree.enderwand.command.argument.Argument
@@ -45,7 +45,7 @@ val COMPLETER_MATERIAL: Completer = {
     Material.values().map { it.name }
 }
 val CRAFTING_MATERIALS: Map<String, Material> by lazy {
-    Material.values().filter { it.recipe != null }.map { it.name to it }.toMap()
+    Material.values().filter { it.recipes.isNotEmpty() }.map { it.name to it }.toMap()
 }
 val PARSER_CRAFTING_MATERIAL: Parser = {
     val mat = PARSER_MATERIAL(it) as Material

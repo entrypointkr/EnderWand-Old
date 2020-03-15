@@ -14,30 +14,32 @@ import org.bukkit.inventory.ShapelessRecipe
 /**
  * Created by JunHyung Lim on 2020-01-16
  */
-val RECIPE_CACHES = mutableMapOf<Material, Recipe?>()
+val RECIPE_CACHES = mutableMapOf<Material, List<Recipe>>()
 
-val ItemStack.recipe
+val ItemStack.recipes
     get() = if (isNotAir()) {
-        type.recipe
-    } else null
-val Material.recipe
+        type.recipes
+    } else emptyList()
+val Material.recipes
     get() = if (this != Material.AIR) {
         RECIPE_CACHES.getOrPut(this) {
-            val recipe = Bukkit.recipeIterator().asSequence().find {
+            val recipes = Bukkit.recipeIterator().asSequence().filter {
                 it.result.type == this
-            }
-            if (recipe == null) {
+            }.filterNotNull().toMutableList()
+            if (recipes.isEmpty()) {
                 val base = base
                 val dye = color.material
                 if (base != null && dye != null) {
-                    ShapelessRecipe(key, item(this)).also {
+                    recipes += ShapelessRecipe(key, item(this)).also {
                         it.addIngredient(base)
                         it.addIngredient(dye)
                     }
-                } else null
-            } else recipe
+                }
+            }
+            recipes
         }
-    } else null
+    } else emptyList()
+
 @Suppress("DEPRECATION")
 val RecipeChoice.itemType
     get() = (this as? RecipeChoice.MaterialChoice)?.choices?.minBy {
