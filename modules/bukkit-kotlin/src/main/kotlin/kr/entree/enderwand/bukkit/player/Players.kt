@@ -8,10 +8,12 @@ import kr.entree.enderwand.bukkit.inventory.takeItem
 import kr.entree.enderwand.bukkit.item.emptyItem
 import kr.entree.enderwand.bukkit.item.isAir
 import kr.entree.enderwand.bukkit.item.isNotAir
+import kr.entree.enderwand.bukkit.location.WorldPoint
 import kr.entree.enderwand.bukkit.scheduler.scheduler
 import kr.entree.enderwand.scheduler.Scheduler
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -61,3 +63,6 @@ fun HumanEntity.ensureCursorItem(scheduler: Scheduler = enderWand.scheduler) {
         }
     }
 }
+
+fun <T> Entity.teleport(worldPoint: WorldPoint<T>) where T : Number, T : Comparable<T> =
+    teleport(worldPoint.toLocation(location))
