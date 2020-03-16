@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack
 /**
  * Created by JunHyung Lim on 2020-03-09
  */
-fun Inventory.asIterable() = Iterable { iterator() }.mapNotNull { it ?: emptyItem() }
+fun Inventory.asIterable() = Iterable { iteratorOfStorage() }.map { getItem(it) ?: emptyItem() }
 
-fun Inventory.asSequence() = Sequence { iterator() }.mapNotNull { it ?: emptyItem() }
+fun Inventory.asSequence() = Sequence { iteratorOfStorage() }.mapNotNull { getItem(it) ?: emptyItem() }
 
 inline fun Inventory.takeItem(
     takeAmount: Int,

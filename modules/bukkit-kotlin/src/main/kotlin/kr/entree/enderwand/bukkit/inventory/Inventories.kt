@@ -12,13 +12,15 @@ import org.bukkit.inventory.PlayerInventory
 /**
  * Created by JunHyung Lim on 2020-01-01
  */
-val Inventory.storageSize
+val Inventory.sizeOfStorage
     get() =
         if (this is PlayerInventory) {
             36
         } else {
             size
         }
+
+fun Inventory.iteratorOfStorage() = (0 until sizeOfStorage).iterator()
 
 fun inventory(type: InventoryType, title: String, configure: Inventory.() -> Unit = {}) =
     Bukkit.createInventory(null, type, title).apply(configure)
