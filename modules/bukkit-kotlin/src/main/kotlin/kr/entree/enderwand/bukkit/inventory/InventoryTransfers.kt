@@ -110,7 +110,7 @@ fun Inventory.spaceAt(slot: Int, item: ItemStack): Int {
 }
 
 fun Inventory.hasSpaces(item: ItemStack) =
-    sumBy {
+    asIterable().sumBy {
         when {
             it.isAir() -> item.maxStackSize
             it.isSimilar(item) -> (item.maxStackSize - it.amount).coerceAtLeast(0)
