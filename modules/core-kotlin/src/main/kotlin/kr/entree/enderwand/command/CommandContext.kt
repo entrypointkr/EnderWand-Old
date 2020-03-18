@@ -11,5 +11,5 @@ open class CommandContext<S : Sender, T>(
 ) {
     val metadata: MutableMap<String, Any> by lazy { mutableMapOf<String, Any>() }
 
-    fun <T> throws(message: String): T = throw CommandException("&c$message")
+    fun throws(message: String): Nothing = throw CommandException("&c$message")
 }

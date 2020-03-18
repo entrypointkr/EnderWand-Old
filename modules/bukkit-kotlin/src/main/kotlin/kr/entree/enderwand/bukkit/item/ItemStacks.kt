@@ -27,7 +27,7 @@ fun ItemStack?.isNotAir(): Boolean {
 fun ItemStack.space(item: ItemStack): Int {
     return when {
         isAir() -> item.maxStackSize
-        isSimilar(item) -> (maxStackSize - item.amount).coerceAtLeast(0)
+        isSimilar(item) -> (maxStackSize - amount).coerceAtLeast(0)
         else -> 0
     }
 }
