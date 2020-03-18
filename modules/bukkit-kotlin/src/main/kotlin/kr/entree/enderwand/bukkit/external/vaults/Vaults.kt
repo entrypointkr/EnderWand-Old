@@ -43,14 +43,14 @@ inline class EconomyHolder(val uuid: UUID) {
         uuid.toOfflinePlayer(),
         amount.toDouble()
     ).let {
-        EconomyResult(amount.toDouble() - it.balance)
+        EconomyResult(amount.toDouble() - it.amount)
     }
 
     fun takeMoney(amount: Number) = economy.withdrawPlayer(
         uuid.toOfflinePlayer(),
         amount.toDouble()
     ).let {
-        EconomyResult(amount.toDouble() - it.balance)
+        EconomyResult(amount.toDouble() - it.amount)
     }
 
     fun hasMoney(amount: Number) = get() >= amount.toDouble()
