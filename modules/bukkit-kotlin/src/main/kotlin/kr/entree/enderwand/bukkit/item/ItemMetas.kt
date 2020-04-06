@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.item
 
+import kr.entree.enderwand.bukkit.lang.i18nName
 import kr.entree.enderwand.bukkit.message.colorize
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -30,7 +31,7 @@ inline fun ItemMeta.lore(configure: MutableList<String>.() -> Unit) {
     lore = newLore
 }
 
-val ItemStack.displayName get() = itemMeta?.displayName ?: ""
+val ItemStack.displayName get() = itemMeta?.displayName?.takeIf { it.isNotBlank() } ?: type.i18nName()
 
 val ItemMeta.modelData
     get() = if (hasCustomModelData()) {
