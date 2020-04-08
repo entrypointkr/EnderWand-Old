@@ -13,9 +13,7 @@ fun Point<Int>.toVector(vector: Vector = Vector()) = Vector(
     (y shl 4) + (vector.blockZ and 15)
 )
 
-fun <T> Point<T>.format(format: String) where T : Number, T : Comparable<T> = MessageFormat.format(format, x, y)
-
-fun <T> Point<T>.serializeToString() where T : Number, T : Comparable<T> = format("{0},{1}")
+fun <T> Point<T>.format(format: String = "{0},{1}") where T : Number, T : Comparable<T> = MessageFormat.format(format, x, y)
 
 infix fun Point<Int>.shl(count: Int) = Point(
     x shl count, y shl count
