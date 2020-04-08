@@ -17,6 +17,14 @@ fun <T> Point<T>.format(format: String) where T : Number, T : Comparable<T> = Me
 
 fun <T> Point<T>.serializeToString() where T : Number, T : Comparable<T> = format("{0},{1}")
 
+infix fun Point<Int>.shl(count: Int) = Point(
+    x shl count, y shl count
+)
+
+infix fun Point<Int>.shr(count: Int) = Point(
+    x shr count, y shr count
+)
+
 inline fun <T> String.toPoint(mapper: (String) -> T) where T : Number, T : Comparable<T> =
     split(",").run {
         Point(mapper(get(0)), mapper(get(1)))
