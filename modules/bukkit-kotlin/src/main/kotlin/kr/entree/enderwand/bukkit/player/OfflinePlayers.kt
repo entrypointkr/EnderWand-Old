@@ -20,3 +20,5 @@ fun OfflinePlayer.tellOrLater(message: String) {
         }
     }
 }
+
+fun OfflinePlayer.format() = "${name}($uniqueId)"
