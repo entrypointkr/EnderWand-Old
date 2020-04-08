@@ -1,5 +1,6 @@
 package kr.entree.enderwand.bukkit.item
 
+import kr.entree.enderwand.bukkit.lang.i18nName
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import kotlin.contracts.ExperimentalContracts
@@ -31,3 +32,7 @@ fun ItemStack.space(item: ItemStack): Int {
         else -> 0
     }
 }
+
+val ItemStack.displayName get() = itemMeta?.displayName?.takeIf { it.isNotBlank() } ?: type.i18nName()
+
+fun ItemStack.format() = "$displayName*$amount"
