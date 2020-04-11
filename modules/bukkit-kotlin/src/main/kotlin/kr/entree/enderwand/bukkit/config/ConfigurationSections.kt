@@ -10,8 +10,23 @@ import java.util.logging.Level
 /**
  * Created by JunHyung Lim on 2020-01-18
  */
+val ConfigurationSection.keys get() = getKeys(false)
+val ConfigurationSection.entries
+    get() = getKeys(false).map {
+        it to get(it)
+    }.filter {
+        it.second != null
+    }
+
 inline fun section(configure: ConfigurationSection.() -> Unit) =
     MemoryConfiguration().apply(configure)
+
+inline fun ConfigurationSection.section(key: String, configure: ConfigurationSection.() -> Unit): ConfigurationSection {
+    val section = MemoryConfiguration()
+    set(key, section)
+    configure(section)
+    return section
+}
 
 fun ConfigurationSection.setMaterials(key: String, materials: Collection<Material>) =
     set(key, materials.map { it.name }.toList())
@@ -50,10 +65,8 @@ inline fun ConfigurationSection.forEach(receiver: (Pair<String, Any?>) -> Unit) 
     }
 }
 
-val ConfigurationSection.keys get() = getKeys(false)
-val ConfigurationSection.entries
-    get() = getKeys(false).map {
-        it to get(it)
-    }.filter {
-        it.second != null
-    }
+fun <V> Iterable<Pair<String, V>>.toSection(): ConfigurationSection {
+    val section = MemoryConfiguration()
+    forEach { (key, value) -> section.set(key, value) }
+    return section
+}
