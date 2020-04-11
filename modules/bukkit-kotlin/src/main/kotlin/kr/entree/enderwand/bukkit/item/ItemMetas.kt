@@ -34,3 +34,5 @@ val ItemMeta.modelData
     get() = if (hasCustomModelData()) {
         customModelData
     } else null
+
+val ItemMeta.customModelDataOrNull get() = if (hasCustomModelData()) customModelData else null
