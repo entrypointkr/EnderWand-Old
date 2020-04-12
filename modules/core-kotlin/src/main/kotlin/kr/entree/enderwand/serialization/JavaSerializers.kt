@@ -34,6 +34,7 @@ object DurationSerializer : KSerializer<Duration> {
     override fun deserialize(decoder: Decoder) = Duration.parse(decoder.decodeString())
 }
 
+@Serializer(forClass = LocalTime::class)
 object LocalTimeSerializer : KSerializer<LocalTime> {
     override val descriptor: SerialDescriptor = SerialDescriptor("LocalTime", PrimitiveKind.STRING)
 
@@ -42,6 +43,7 @@ object LocalTimeSerializer : KSerializer<LocalTime> {
     override fun deserialize(decoder: Decoder) = LocalTime.parse(decoder.decodeString())
 }
 
+@Serializer(forClass = LocalDate::class)
 object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor = SerialDescriptor("LocalDate", PrimitiveKind.STRING)
 
