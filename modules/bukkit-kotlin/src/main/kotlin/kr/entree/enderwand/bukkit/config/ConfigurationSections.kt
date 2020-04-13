@@ -70,3 +70,7 @@ fun <V> Iterable<Pair<String, V>>.toSection(): ConfigurationSection {
     forEach { (key, value) -> section.set(key, value) }
     return section
 }
+
+inline fun <reified T> ConfigurationSection.getTypedList(key: String): List<T> {
+    return getList(key)?.map { it as T } ?: emptyList()
+}

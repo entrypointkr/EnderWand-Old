@@ -3,12 +3,17 @@ package kr.entree.enderwand.bukkit.location
 import kr.entree.enderwand.math.Point
 import kr.entree.enderwand.math.Point3D
 import org.bukkit.Location
+import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
-import java.text.MessageFormat
 
 /**
  * Created by JunHyung Lim on 2020-01-06
  */
+object Locations {
+    val entityTypeByClass = mutableMapOf<Class<out Entity>, EntityType>()
+}
+
 fun Location.toBlockLocation(): Location {
     toVector().toBlockVector()
     return Location(
@@ -40,12 +45,27 @@ fun Vector.toChunkPoint() = Point(
 
 fun Location.toChunkPoint() = toVector().toChunkPoint()
 
-fun Vector.format(format: String = "x: {0}, y: {1}, z: {2}") =
-    MessageFormat.format(format, x, y, z)
+fun Location.format() = "x: $x, y: $y, z: $z, world: $world"
 
-fun Vector.format2D() = format("x: {0}, z: {2}")
+fun Location.highestY() = world!!.getHighestBlockYAt(this)
 
-fun Vector.serializeToString() = format("{0},{1},{2}")
+fun Location.highest() = Location(world, x, highestY().toDouble(), z)
+
+fun Location.highestBlock() = highest().block
+
+fun Location.add(x: Int, y: Int, z: Int) = add(x.toDouble(), y.toDouble(), z.toDouble())
+
+inline fun <reified T : Entity> Location.spawnEntity(): T {
+    return world!!.spawnEntity(this, Locations.entityTypeByClass.getOrPut(T::class.java) {
+        EntityType.values().find { it.entityClass == T::class.java }!!
+    }) as T
+}
+
+fun Vector.format() = "x: $x, y: $y, z: $z"
+
+fun Vector.format2D() = "x: $x, z: $z"
+
+fun Vector.serializeToString() = "$x,$y,$z"
 
 inline fun String.toVector(mapper: (String) -> Double = { it.toDouble() }) =
     split(",").run {
