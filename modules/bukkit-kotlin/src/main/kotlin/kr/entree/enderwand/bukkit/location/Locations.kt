@@ -45,7 +45,10 @@ fun Vector.toChunkPoint() = Point(
 
 fun Location.toChunkPoint() = toVector().toChunkPoint()
 
-fun Location.format() = "x: $x, y: $y, z: $z, world: $world"
+fun Location.format() = buildString {
+    append("x: $x, y: $y, z: $z")
+    world?.apply { append("world: $name") }
+}
 
 fun Location.highestY() = world!!.getHighestBlockYAt(this)
 
