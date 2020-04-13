@@ -53,7 +53,7 @@ fun Location.highest() = Location(world, x, highestY().toDouble(), z)
 
 fun Location.highestBlock() = highest().block
 
-fun Location.add(x: Int, y: Int, z: Int) = add(x.toDouble(), y.toDouble(), z.toDouble())
+fun Location.add(x: Number, y: Number, z: Number) = add(x.toDouble(), y.toDouble(), z.toDouble())
 
 inline fun <reified T : Entity> Location.spawnEntity(): T {
     return world!!.spawnEntity(this, Locations.entityTypeByClass.getOrPut(T::class.java) {
