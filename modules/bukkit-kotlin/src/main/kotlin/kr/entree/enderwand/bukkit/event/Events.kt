@@ -32,14 +32,13 @@ inline fun <reified T : Event> Plugin.on(
     priority: EventPriority = EventPriority.NORMAL,
     ignoreCancelled: Boolean = false,
     crossinline receiver: T.(FunctionalEventExecutor) -> Unit
-) =
-    FunctionalEventExecutor(ignoreCancelled) { _, event ->
-        if (event is T) {
-            receiver(event, this)
-        }
-    }.also { executor ->
-        Bukkit.getPluginManager()
-            .registerEvent(T::class.java, executor, priority, executor, this)
+) = FunctionalEventExecutor(ignoreCancelled) { _, event ->
+    if (event is T) {
+        receiver(event, this)
     }
+}.also { executor ->
+    Bukkit.getPluginManager()
+        .registerEvent(T::class.java, executor, priority, executor, this)
+}
 
 fun <T : Event> T.call() = apply { Bukkit.getPluginManager().callEvent(this) }

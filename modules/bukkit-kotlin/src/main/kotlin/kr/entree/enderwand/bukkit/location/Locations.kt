@@ -70,6 +70,8 @@ fun Vector.format2D() = "x: $x, z: $z"
 
 fun Vector.serializeToString() = "$x,$y,$z"
 
+fun Vector.add(x: Number, y: Number, z: Number) = add(Vector(x.toDouble(), y.toDouble(), z.toDouble()))
+
 inline fun String.toVector(mapper: (String) -> Double = { it.toDouble() }) =
     split(",").run {
         Vector(mapper(get(0)), mapper(get(1)), mapper(get(2)))
