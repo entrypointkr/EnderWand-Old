@@ -41,3 +41,5 @@ inline fun <reified T : Event> Plugin.on(
         Bukkit.getPluginManager()
             .registerEvent(T::class.java, executor, priority, executor, this)
     }
+
+fun <T : Event> T.call() = apply { Bukkit.getPluginManager().callEvent(this) }
