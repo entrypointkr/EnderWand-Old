@@ -42,6 +42,8 @@ val Material.isMineStone
         else -> false
     }
 
+val Material.isBucket get() = name.endsWith("_BUCKET")
+
 val Material.color
     get() = MaterialColor(name.substringBefore('_'))
 

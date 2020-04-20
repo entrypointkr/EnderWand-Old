@@ -15,6 +15,7 @@ fun Inventory.asSequence() = Sequence { iteratorOfStorage() }.mapNotNull { getIt
 
 inline fun Inventory.takeItem(
     takeAmount: Int,
+    keepBucket: Boolean = true,
     crossinline selector: (ItemStack) -> Boolean
 ): JobResult {
     if (takeAmount <= 0) return JobResult.SUCCESS
@@ -30,7 +31,7 @@ inline fun Inventory.takeItem(
     return if (hasAmount >= takeAmount) {
         var remain = takeAmount
         for ((slot, item) in slotItems) {
-            takeAt(slot, item, item.amount.coerceAtMost(remain))
+            takeAt(slot, item, item.amount.coerceAtMost(remain), keepBucket)
             remain -= item.amount
             if (remain <= 0) break
         }
@@ -42,8 +43,19 @@ inline fun Inventory.takeItem(
 
 fun Inventory.takeItem(
     item: ItemStack,
-    takeAmount: Int = item.amount
-) = takeItem(takeAmount) { item.isSimilar(it) }
+    takeAmount: Int = item.amount,
+    keepBucket: Boolean = true
+) = takeItem(takeAmount, keepBucket) { item.isSimilar(it) }
+
+inline fun Inventory.removeItems(selector: (ItemStack) -> Boolean) {
+    for ((slot, item) in withIndex()) {
+        if (item != null && selector(item)) {
+            setItem(slot, null)
+        }
+    }
+}
+
+fun Inventory.removeItems(item: ItemStack) = removeItems { it.isSimilar(item) }
 
 inline fun Inventory.filter(
     crossinline selector: (ItemStack) -> Boolean

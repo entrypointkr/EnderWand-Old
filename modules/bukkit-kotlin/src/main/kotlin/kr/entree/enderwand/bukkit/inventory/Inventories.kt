@@ -2,7 +2,10 @@ package kr.entree.enderwand.bukkit.inventory
 
 import kr.entree.enderwand.bukkit.item.isAir
 import kr.entree.enderwand.bukkit.item.item
+import kr.entree.enderwand.bukkit.item.toItem
+import kr.entree.enderwand.bukkit.material.isBucket
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -48,23 +51,29 @@ fun Inventory.addAt(slot: Int, item: ItemStack, count: Int = item.amount): JobRe
     )
 }
 
-fun Inventory.takeAt(slot: Int, item: ItemStack, count: Int = item.amount): JobResult {
+fun Inventory.takeAt(
+    slot: Int,
+    item: ItemStack,
+    count: Int = item.amount,
+    keepBucket: Boolean = true
+): JobResult {
     if (count <= 0) return JobResult.SUCCESS
     val slotItem = getItem(slot)
-    return JobResult(
-        when {
-            slotItem != null && slotItem.isSimilar(item) -> {
-                if (slotItem.amount > count) {
-                    slotItem.amount -= count
-                    0
-                } else {
-                    setItem(slot, null)
-                    count - slotItem.amount
-                }
+    return if (slotItem != null && slotItem.isSimilar(item)) {
+        if (slotItem.amount > count) {
+            slotItem.amount -= count
+            if (keepBucket && slotItem.type.isBucket) {
+                giveItemOrDrop(Material.BUCKET.toItem(count))
             }
-            else -> count
+            JobResult.SUCCESS
+        } else {
+            setItem(slot, null)
+            if (slotItem.type.isBucket) {
+                giveItemOrDrop(Material.BUCKET.toItem(slotItem.amount))
+            }
+            JobResult(count - slotItem.amount)
         }
-    )
+    } else JobResult(count)
 }
 
 
