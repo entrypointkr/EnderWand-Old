@@ -1,14 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import kr.entree.spigradle.kotlin.dependency.protocolLib
-import kr.entree.spigradle.kotlin.dependency.spigot
-import kr.entree.spigradle.kotlin.dependency.vault
-import kr.entree.spigradle.kotlin.repository.jitpack
-import kr.entree.spigradle.kotlin.repository.protocolLib
+import kr.entree.spigradle.kotlin.jitpack
+import kr.entree.spigradle.kotlin.protocolLib
+import kr.entree.spigradle.kotlin.spigot
+import kr.entree.spigradle.kotlin.vault
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("kr.entree.spigradle") version "1.1.4"
+    id("kr.entree.spigradle") version "1.4.0"
     id("maven-publish")
 }
 
@@ -54,7 +53,7 @@ tasks {
         group = "shadow"
         archiveClassifier.set("nostdlib")
         doFirst {
-            spigot.softDepends.add("Spikot")
+            spigot.softDepends = spigot.softDepends + "Spigot"
             spigotPluginYaml { actions.forEach { it.execute(this) } }
         }
         from(project.convention.getPlugin<JavaPluginConvention>().sourceSets["main"].output)
